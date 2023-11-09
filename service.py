@@ -40,4 +40,5 @@ class Service():
         rou_file.insert(new_route("trajetEW",["-E3","-E2"])) # Est vers Ouest
         rou_file.insert(new_route("trajetWE",["E2","E3"])) # Ouest vers Est
 
-        # Définition d
+        # Save file
+        rou_file.save(self.path)
