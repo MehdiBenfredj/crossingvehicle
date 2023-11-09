@@ -27,3 +27,14 @@ class Service():
         pass
 
 
+    def generate_rou_file(self):
+        rou_file = RouFile()
+
+        # Définition d'un type de véhicule (voiture)
+        rou_file.insert(new_vehicle_type("car",1.0,5.0,4.0,2.5,50.0,0.5,"passenger"))
+
+        # Définition des trajets
+        rou_file.insert(new_route("trajetNS",["E0","E1"])) # Nord vers Sud
+        rou_file.insert(new_route("trajetSN",["-E1","-E0"])) # Sud vers Nord
+        rou_file.insert(new_route("trajetEW",["-E3","-E2"])) # Est vers Ouest
+        rou_file.insert(new_route("trajetWE",["E2","E3"])) # Ouest vers Est
