@@ -4,8 +4,8 @@ import libsumo as traci
 import os
 
 class Service():
-    def __init__(self, sumo_file_folder : str) -> None:
-        self.path = os.path.abspath(sumo_file_folder)
+    def __init__(self, sumo_folder : str) -> None:
+        self.path = os.path.abspath(sumo_folder)
         os.makedirs(self.path, exist_ok=True)
 
     def get_all_vehicles_and_pos(self) -> list[tuple]:
@@ -22,6 +22,7 @@ class Service():
             point = Point(vehicle[1][0], [1][1])
             if aera.contains(point):
                 vehicles_in_aera.append(vehicle[0])
+        return vehicles_in_aera
 
     def apply_chromosom(self, chromosom : tuple):
         pass
