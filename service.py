@@ -25,7 +25,7 @@ class Service():
         vehicles_in_area = []
         vehicles = self.__get_all_vehicles_and_pos()
         for vehicle in vehicles:
-            point = Point(vehicle[1][0], [1][1])
+            point = Point(vehicle[1][0], vehicle[1][1])
             if self.area.contains(point):
                 vehicles_in_area.append(vehicle[0])
         return vehicles_in_area
