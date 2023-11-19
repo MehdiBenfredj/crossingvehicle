@@ -23,11 +23,11 @@ class RouFile():
 
     def save(self, folder : str, name : str = "generated.rou.xml"):
         
-        sorted_vehicles = sorted(self.vehicles, lambda x : x[0])
+        sorted_vehicles = sorted(self.vehicles, key=lambda x : x[0])
         vehicle_balises = [x[1] for x in sorted_vehicles]
         self.rows.extend(vehicle_balises)
         self.rows.append("</routes>")
-        
+
         with open(os.path.join(folder, name),"w") as rou_file:
             for row in self.rows:
                 rou_file.write(row + "\n")

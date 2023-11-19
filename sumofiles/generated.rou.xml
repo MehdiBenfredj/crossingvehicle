@@ -5,4 +5,10 @@
 	<route id="route03" edges="E2 E3 ">
 	<route id="route04" edges="-E3 -E2 ">
 	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
+	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
+	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
+	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
+	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
+	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
+	
 </routes>
