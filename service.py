@@ -34,15 +34,17 @@ class Service():
         rou_file = RouFile()
 
         # Définition d'un type de véhicule (voiture)
-        rou_file.insert(new_vehicle_type("car",1.0,5.0,4.0,2.5,50.0,0.5,"passenger"))
+        rou_file.new_vehicle_type("car",1.0,5.0,4.0,2.5,50.0,0.5,"passenger")
 
         # Définition des trajets
-        rou_file.insert(new_route("trajetNS",["E0","E1"])) # Nord vers Sud
-        rou_file.insert(new_route("trajetSN",["-E1","-E0"])) # Sud vers Nord
-        rou_file.insert(new_route("trajetEW",["-E3","-E2"])) # Est vers Ouest
-        rou_file.insert(new_route("trajetWE",["E2","E3"])) # Ouest vers Est
+        rou_file.new_route("trajetNS",["E0","E1"]) # Nord vers Sud
+        rou_file.new_route("trajetSN",["-E1","-E0"]) # Sud vers Nord
+        rou_file.new_route("trajetEW",["-E3","-E2"]) # Est vers Ouest
+        rou_file.new_route("trajetWE",["E2","E3"]) # Ouest vers Est
 
+        # Générer 25 vehicules avec des départs différents aléatoires
         for i in range(25):
-            rou_file.insert(new_vehicle("veh{}".format(i), "trajetNS", "car", rd.randint(1000,10000), (1,0,0)))
+            rou_file.new_vehicle("veh{}".format(i), "trajetNS", "car", rd.randint(1000,10000), (1,0,0))
+
         # Save file
         rou_file.save(self.path)
