@@ -1,6 +1,9 @@
-from service import Repository
+from service import Service
 
+# Créer un Service
+srv = Service("sumofiles")
 
-# Test
-r = Repository("sumofiles")
-r.gen_traffic_file("params")
+# Générer le rou file
+srv.generate_rou_file()
+
+# Lancer sumo manuellement

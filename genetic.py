@@ -33,6 +33,3 @@ class GeneticAlgorithm():
             libsumo.start(["sumo-gui", "-c", conf_file_path])
         else:
             libsumo.start(["sumo", "-c", conf_file_path])
-
-ga = GeneticAlgorithm()
-ga.

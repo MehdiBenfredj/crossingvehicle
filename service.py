@@ -27,7 +27,7 @@ class Service():
 
 
     def apply_chromosom(self, chromosom : list):
-        
+        pass
 
 
     def generate_rou_file(self):
