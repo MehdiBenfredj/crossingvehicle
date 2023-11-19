@@ -1,6 +1,7 @@
 import os
 
 class RouFile():
+
     def __init__(self) -> None:
         self.rows = ["<routes>"]
         self.vehicles = []
