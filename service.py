@@ -40,7 +40,7 @@ class Service():
             traci.TraCIPhase(chromosom[3], "ryry", 0, 0)
         ]
 
-        logic = traci.TraCILogic("custom", "static", 0, phases)
+        logic = traci.TraCILogic("custom", "static", 0, phases, None)
         traci.trafficlight.setProgramLogic(intersection_id, logic)
 
 
