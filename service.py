@@ -42,6 +42,7 @@ class Service():
 
         logic = traci.TraCILogic("custom", "static", 0, phases)
         traci.trafficlight.setProgramLogic(intersection_id, logic)
+        traci.trafficlight.setProgram(intersection_id, "custom")
 
 
     def step(self) -> list[str]:
