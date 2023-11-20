@@ -1,5 +1,6 @@
 from service import Service
-import libsumo
+import numpy as np
+import libsumo as traci
 import os
 
 class GeneticAlgorithm():
@@ -10,11 +11,40 @@ class GeneticAlgorithm():
         self.sumo_cfg = sumo_cfg_file
 
         self.population = []
+        self.fitness = []
         
         self.srv = Service(sumo_folder)
-    
-    def _compute_fitness(self, chromosom : list[float]) -> float:
+
+    def generate_initial_pop(self, max_cycle_time : int):
         pass
+    
+    def _compute_fitness(self, chromosom : tuple) -> float:
+
+        time_per_vehicle = []
+
+        conf_file_path = os.path.join(self.sumo_folder, self.sumo_cfg)
+        if self.gui:
+            traci.start(["sumo-gui", "-c", conf_file_path])
+        else:
+            traci.start(["sumo", "-c", conf_file_path])
+
+        self.srv.apply_chromosom("J0", chromosom)
+        while traci.simulation.getMinExpectedNumber() > 0:
+            
+            # Compute fitness
+            vehicles_in_aera = self.srv.step()
+            # Compute
+        
+        traci.close()
+        
+        # Compute fitness
+        fitness = []
+
+        return fitness
+
+        
+
+
 
     def _select_parents(self) -> list[list[float]]:
         pass
@@ -22,12 +52,11 @@ class GeneticAlgorithm():
     def _crossing(self) -> list[float]:
         pass
         
-
-    def run(self) -> None:
-        conf_file_path = os.path.join(self.sumo_folder, self.sumo_cfg)
+    def run(self, iterations : int) -> None:
         self.srv.generate_rou_file()
+        for item in self.population:
+            self.fitness.append(self._compute_fitness(item))
 
-        if self.gui:
-            libsumo.start(["sumo-gui", "-c", conf_file_path])
-        else:
-            libsumo.start(["sumo", "-c", conf_file_path])
+        
+
+        
