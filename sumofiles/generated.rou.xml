@@ -1,14 +1,107 @@
 <routes>
-	<vType id="car" accel="1.0" decel="5.0" length="4.0" minGap="2.5" maxSpeed="50.0" sigma="0.5">
-	<route id="route01" edges="E0 E1 ">
-	<route id="route02" edges="-E1 -E0 ">
-	<route id="route03" edges="E2 E3 ">
-	<route id="route04" edges="-E3 -E2 ">
-	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
-	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
-	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
-	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
-	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
-	<vehicle depart="100" id="vehicle01" route="route01" type="car" color="1,1,1">
-	
+	<vType id="car" accel="1.0" decel="5.0" length="4.0" minGap="2.5" maxSpeed="50.0" sigma="0.5"/>
+	<route id="trajetNS" edges="E0 E1 "/>
+	<route id="trajetSN" edges="-E1 -E0 "/>
+	<route id="trajetEW" edges="-E3 -E2 "/>
+	<route id="trajetWE" edges="E2 E3 "/>
+	<vehicle depart="1082" id="veh10" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="1127" id="veh10" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="1211" id="veh17" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="1235" id="veh15" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="1277" id="veh19" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="1355" id="veh23" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="1453" id="veh13" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="1632" id="veh24" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="1698" id="veh21" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="1814" id="veh2" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="1958" id="veh12" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="1986" id="veh22" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="2028" id="veh1" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="2092" id="veh16" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="2141" id="veh6" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="2243" id="veh20" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="2333" id="veh1" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="2417" id="veh0" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="2594" id="veh4" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="2604" id="veh8" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="2634" id="veh6" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="2715" id="veh0" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="2737" id="veh20" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="2885" id="veh0" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="3009" id="veh7" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="3011" id="veh1" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="3280" id="veh15" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="3409" id="veh24" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="3415" id="veh19" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="3519" id="veh5" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="3633" id="veh8" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="3642" id="veh6" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="3690" id="veh22" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="4195" id="veh2" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="4303" id="veh13" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="4405" id="veh5" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="4447" id="veh23" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="4529" id="veh17" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="4712" id="veh16" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="4962" id="veh6" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="5145" id="veh11" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="5177" id="veh15" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="5220" id="veh2" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="5272" id="veh23" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="5614" id="veh11" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="5706" id="veh3" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="5783" id="veh20" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="5991" id="veh16" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="5992" id="veh21" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="6008" id="veh14" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="6011" id="veh3" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="6245" id="veh24" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="6255" id="veh8" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="6355" id="veh10" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="6456" id="veh11" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="6456" id="veh15" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="6534" id="veh21" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="6658" id="veh18" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="6772" id="veh20" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="7025" id="veh19" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="7073" id="veh7" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="7135" id="veh12" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="7141" id="veh4" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="7151" id="veh4" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="7291" id="veh12" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="7437" id="veh14" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="7584" id="veh21" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="7657" id="veh4" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="7762" id="veh3" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="7763" id="veh5" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="7956" id="veh14" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="8151" id="veh23" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="8309" id="veh12" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="8328" id="veh18" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="8398" id="veh16" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="8409" id="veh17" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="8572" id="veh7" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="8586" id="veh18" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="8654" id="veh1" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="8709" id="veh8" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="8715" id="veh13" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="8760" id="veh10" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="8775" id="veh3" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="8796" id="veh22" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="8838" id="veh2" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="8987" id="veh14" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="9118" id="veh9" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="9172" id="veh9" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="9342" id="veh24" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="9454" id="veh9" route="trajetEW" type="car" color="1,0,0"/>
+	<vehicle depart="9536" id="veh13" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="9591" id="veh11" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="9670" id="veh22" route="trajetNS" type="car" color="1,0,0"/>
+	<vehicle depart="9736" id="veh18" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="9792" id="veh5" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="9804" id="veh19" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="9805" id="veh7" route="trajetWE" type="car" color="1,0,0"/>
+	<vehicle depart="9935" id="veh17" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="9952" id="veh9" route="trajetSN" type="car" color="1,0,0"/>
+	<vehicle depart="9994" id="veh0" route="trajetEW" type="car" color="1,0,0"/>
 </routes>
