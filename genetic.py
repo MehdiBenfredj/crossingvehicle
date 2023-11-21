@@ -19,9 +19,9 @@ class GeneticAlgorithm():
         pass
     
     def _compute_fitness(self, chromosom : tuple) -> float:
-
-        time_per_vehicle = []
-
+        
+        time_per_vehicle = {}
+         
         conf_file_path = os.path.join(self.sumo_folder, self.sumo_cfg)
         if self.gui:
             traci.start(["sumo-gui", "-c", conf_file_path])
@@ -31,26 +31,38 @@ class GeneticAlgorithm():
         self.srv.apply_chromosom("J0", chromosom)
         while traci.simulation.getMinExpectedNumber() > 0:
             
-            # Compute fitness
             vehicles_in_aera = self.srv.step()
-            # Compute
+            for vehicule in vehicles_in_aera:
+                if vehicule in time_per_vehicle:
+                    time_per_vehicle[vehicule] += 1
+                else:
+                    time_per_vehicle[vehicule] = 1
         
         traci.close()
-        
-        # Compute fitness
-        fitness = []
 
-        return fitness
-
-        
+        return sum(time_per_vehicle.values())/len(time_per_vehicle)
 
 
 
     def _select_parents(self) -> list[list[float]]:
         pass
 
-    def _crossing(self) -> list[float]:
-        pass
+
+    def _crossing(self, chromosom_a : list, chromosom_b : list, nb_points : int = 1) -> list[float]:
+        parts = nb_points+1
+        loc = int(len(chromosom_a)/parts)
+        sub_lists_a = []
+        sub_lists_b = []
+
+        for i in range(parts):
+            if i == parts-1:
+                sub_lists_a.append(chromosom_a[i*loc:])
+                sub_lists_b.append(chromosom_b[i*loc:])
+                continue
+            sub_lists_a.append(chromosom_a[i*loc:(i+1)*loc])
+            sub_lists_b.append(chromosom_b[i*loc:(i+1)*loc])
+
+
         
     def run(self, iterations : int) -> None:
         self.srv.generate_rou_file()

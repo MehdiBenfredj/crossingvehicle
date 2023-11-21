@@ -34,15 +34,14 @@ class Service():
     def apply_chromosom(self, intersection_id : str, chromosom : tuple):
 
         phases = [
-            traci.TraCIPhase(chromosom[0], "GrGr", 0, 0),
-            traci.TraCIPhase(chromosom[1], "yryr", 0, 0),
-            traci.TraCIPhase(chromosom[2], "rGrG", 0, 0),
-            traci.TraCIPhase(chromosom[3], "ryry", 0, 0)
+            traci.TraCIPhase(chromosom[0], "GrGr", chromosom[0], chromosom[0]),
+            traci.TraCIPhase(chromosom[1], "yryr", chromosom[1], chromosom[1]),
+            traci.TraCIPhase(chromosom[2], "rGrG", chromosom[2], chromosom[2]),
+            traci.TraCIPhase(chromosom[3], "ryry", chromosom[3], chromosom[3])
         ]
 
-        logic = traci.TraCILogic("custom", 0, 0, phases)
+        logic = traci.TraCILogic("0", 0, 0, phases)
         traci.trafficlight.setProgramLogic(intersection_id, logic)
-        traci.trafficlight.setProgram(intersection_id, "custom")
 
 
     def step(self) -> list[str]:
@@ -53,7 +52,6 @@ class Service():
     def generate_rou_file(self):
 
         rou_file = RouFile()
-
         # Vehicle type definition
         rou_file.new_vehicle_type("car",1.0,5.0,4.0,2.5,50.0,0.5,"passenger")
 
