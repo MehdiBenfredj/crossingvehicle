@@ -132,8 +132,11 @@ class GeneticAlgorithm():
 
     def run(self) -> None:
         self.srv.generate_rou_file()
+        self._generate_initial_pop()
         for i in range(self.params.iterations):
-            pass
+            self._update_pop()
+        print("La meilleure solution est la suivante :")
+        # Get best soluce here
 
         
 
