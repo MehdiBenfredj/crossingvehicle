@@ -1,5 +1,5 @@
 from service import Service
-import numpy as np
+import random
 import libsumo as traci
 import os
 
@@ -15,10 +15,25 @@ class GeneticAlgorithm():
         
         self.srv = Service(sumo_folder)
 
-    def generate_initial_pop(self, max_cycle_time : int):
+
+    def _sanitize_chromosom(self, min_phase_time : int, max_cycle_time : int, chromosom : list) -> list:
+
+        indexes = [i for i in range(len(chromosom))]
+        while sum(chromosom) > max_cycle_time:
+            decrement_index = random.choices(indexes, weights=chromosom, k=1)[0]
+            if chromosom[decrement_index] > min_phase_time:
+                chromosom[decrement_index] -= 1
+
+        return chromosom
+
+
+    def generate_initial_pop(self, max_cycle_time : int, size : int):
         pass
+
+
     
-    def _compute_fitness(self, chromosom : tuple) -> float:
+
+    def _compute_fitness(self, chromosom : list) -> float:
         
         time_per_vehicle = {}
          
@@ -62,6 +77,25 @@ class GeneticAlgorithm():
             sub_lists_a.append(chromosom_a[i*loc:(i+1)*loc])
             sub_lists_b.append(chromosom_b[i*loc:(i+1)*loc])
 
+        chromosom_a = []
+        chromosom_b = []
+        for i in range(len(sub_lists_a)):
+            if i%2 == 0:
+                chromosom_a.extend(sub_lists_a[i])
+                chromosom_b.extend(sub_lists_b[i])
+            else:
+                chromosom_a.extend(sub_lists_b[i])
+                chromosom_b.extend(sub_lists_a[i])
+    
+
+    #TODO
+    def mutation(self, proba : float, chromosom : list) -> list:
+        rand_number = random.random()
+        if rand_number < proba:
+            rand_index = random.randint(0, len(chromosom)-1)
+            mutation = random.randint(-1, -3)
+            # Finir logique
+        
 
         
     def run(self, iterations : int) -> None:

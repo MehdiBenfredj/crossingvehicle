@@ -1,0 +1,5 @@
+GUI=true
+SUMO_FOLDER=sumofiles
+SUMO_CFG_FILE=config.sumocfg
+MIN_PHASE_TIME=3
+MAX_CYCLE_TIME=60
