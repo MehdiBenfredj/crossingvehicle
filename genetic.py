@@ -4,6 +4,8 @@ import random
 import libsumo as traci
 import os
 
+# TODO : reduire les appels à sorted
+
 class GeneticAlgorithm():
 
     def __init__(self, config : GeneticConfig) -> None:
