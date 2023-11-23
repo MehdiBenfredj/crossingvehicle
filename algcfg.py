@@ -2,6 +2,8 @@ from dotenv import dotenv_values
 
 class GeneticConfig():
     def __init__(self) -> None:
+        self.simulation_time = None
+        self.vehicles_per_route = None
         self.gui = None
         self.sumo_folder = None
         self.sumo_cfg_file = None
@@ -31,6 +33,8 @@ class GeneticConfig():
     def load_from_env_file(self, file : str = "env"):
         try:
             values = dotenv_values()
+            self.simulation_time = values["SIMULATION_TIME"]
+            self.vehicles_per_route = values["VEHICLES_PER_ROUTE"]
             self.gui = values["GUI"].lower() in ["true", "t", "1", "yes", "y"]
             self.sumo_folder = values["SUMO_FOLDER"]
             self.sumo_cfg_file = values["SUMO_CFG_FILE"]

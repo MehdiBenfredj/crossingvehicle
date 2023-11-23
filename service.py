@@ -44,12 +44,14 @@ class Service():
         traci.trafficlight.setProgramLogic(intersection_id, logic)
 
 
+
     def step(self) -> list[str]:
         traci.simulationStep()
         return self._get_vehicle_in_area()
 
 
-    def generate_rou_file(self):
+
+    def generate_rou_file(self, simulation_time : int, vehicles_per_route : int):
 
         rou_file = RouFile()
         # Vehicle type definition
@@ -64,8 +66,8 @@ class Service():
 
         # Generate 25 vehicules with random depart on each route
         for route in routes:
-            for i in range(25):
-                rou_file.new_vehicle("veh{}".format(i), route, "car", rd.randint(1000,10000), (1,0,0))
+            for i in vehicles_per_route:
+                rou_file.new_vehicle("veh{}".format(i), route, "car", rd.randint(0,simulation_time), (1,0,0))
             
 
         # Save file
