@@ -11,7 +11,7 @@ class GeneticAlgorithm():
     def __init__(self, config : GeneticConfig) -> None:
         
         self.params = config
-        self.population_and_fitness = []
+        self.population_and_fitness = self._generate_initial_pop()
         self.srv = Service(config.sumo_folder)
 
 
@@ -59,7 +59,7 @@ class GeneticAlgorithm():
 
     def _select_parents(self) -> list[list[float]]:
 
-        sorted_pop = sorted(self.population_and_fitness, key=lambda x: x[1], reverse=True)
+        sorted_pop = sorted(self.population_and_fitness, key=lambda x: x[1])
         parents = [item[0] for item in sorted_pop[:self.params.parents_number]]
         return parents
 
@@ -121,11 +121,11 @@ class GeneticAlgorithm():
             couple = random.choices(parents, k=2)
             children.extend(self._crossing(couple[0], couple[1]))
 
-        children = [self._mutation(child) for child in children]
-        children_and_fitness = [[child, self._compute_fitness(child)] for child in children]
+        mutated_children = [self._mutation(child) for child in children]
+        children_and_fitness = [[child, self._compute_fitness(child)] for child in mutated_children]
         
         keep_parents = len(self.population_and_fitness) - self.params.children_number
-        new_pop = sorted(self.population_and_fitness, key=lambda x: x[1], reverse=True)[:keep_parents]
+        new_pop = sorted(self.population_and_fitness, key=lambda x: x[1])[:keep_parents]
         new_pop.extend(children_and_fitness)
         
         self.population_and_fitness = new_pop

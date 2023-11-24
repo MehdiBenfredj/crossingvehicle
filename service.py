@@ -66,7 +66,7 @@ class Service():
 
         # Generate 25 vehicules with random depart on each route
         for route in routes:
-            for i in vehicles_per_route:
+            for i in range(vehicles_per_route):
                 rou_file.new_vehicle("veh{}".format(i), route, "car", rd.randint(0,simulation_time), (1,0,0))
             
 
