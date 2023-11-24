@@ -1,9 +1,9 @@
-from dotenv import dotenv_values
+import json
 
 class GeneticConfig():
     def __init__(self) -> None:
-        self.simulation_time = None
-        self.vehicles_per_route = None
+        self.duration = None
+        self.vehicles_per_route = []
         self.gui = None
         self.sumo_folder = None
         self.sumo_cfg_file = None
@@ -19,33 +19,23 @@ class GeneticConfig():
         # other params...
 
 
-    def is_valid(self) -> bool:
-        return None not in list(vars(self).values)
-    
-    
-    def print_undefined_items(self):
-        print("Unable to run algorithm (Bad configuration) :")
-        for k, value in vars(self).items():
-            if value == None:
-                print("- {} undefined".format(k))
-                
 
-    def load_from_env_file(self, file : str = "env"):
-        try:
-            values = dotenv_values()
-            self.simulation_time = values["SIMULATION_TIME"]
-            self.vehicles_per_route = values["VEHICLES_PER_ROUTE"]
-            self.gui = values["GUI"].lower() in ["true", "t", "1", "yes", "y"]
-            self.sumo_folder = values["SUMO_FOLDER"]
-            self.sumo_cfg_file = values["SUMO_CFG_FILE"]
-            self.iterations = values["ITERATIONS"]
-            self.intersection_id = values["INTERSECTION_ID"]
-            self.min_phase_time = values["MIN_PHASE_TIME"]
-            self.max_cycle_time = values["MAX_CYCLE_TIME"]
-            self.parents_number = values["PARENTS_NUMBER"]
-            self.children_number = values["CHILDREN_NUMBER"]
-            self.crossing_points = values["CROSSING_POINTS"]
-            self.mutation_proba = values["MUTATION_PROBA"]
-            self.initial_pop_size = values["INITIAL_POP_SIZE"]
-        except:
-            pass
+    def load_from_file(self, file : str = "env"):
+        with open(file, 'r') as json_file:
+            values = json.load(json_file)
+
+        self.duration = values["duration"]
+        self.vehicles_per_route = values["vehicles_per_route"]
+        self.gui = values["gui"]
+        self.sumo_folder = values["sumo_folder"]
+        self.sumo_cfg_file = values["sumo_cfg_file"]
+        self.iterations = values["iterations"]
+        self.intersection_id = values["intersection_id"]
+        self.min_phase_time = values["min_phase_time"]
+        self.max_cycle_time = values["max_cycle_time"]
+        self.parents_number = values["parents_number"]
+        self.children_number = values["children_number"]
+        self.crossing_points = values["crossing_points"]
+        self.mutation_proba = values["mutation_proba"]
+        self.initial_pop_size = values["initial_pop_size"]
+        # set other params

@@ -133,7 +133,7 @@ class GeneticAlgorithm():
 
 
     def run(self) -> None:
-        self.srv.generate_rou_file(self.params.simulation_time, self.params.vehicles_per_route)
+        self.srv.generate_rou_file(self.params.duration, self.params.vehicles_per_route)
         self._generate_initial_pop()
         for i in range(self.params.iterations):
             self._update_pop()

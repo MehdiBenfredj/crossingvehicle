@@ -1,0 +1,16 @@
+{
+    "duration": 600,
+    "vehicles_per_route": [25, 25, 25, 25],
+    "gui": true,
+    "sumo_folder": "sumofiles",
+    "sumo_cfg_file": "config.sumocfg",
+    "iterations": 100,
+    "intersection_id": "J0",
+    "min_phase_time": 3,
+    "max_cycle_time": 60,
+    "parents_number": 4,
+    "children_number" : 4,
+    "crossing_points": 1,
+    "mutation_proba": 0.5,
+    "initial_pop_size": 8
+}

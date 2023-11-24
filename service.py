@@ -51,7 +51,7 @@ class Service():
 
 
 
-    def generate_rou_file(self, simulation_time : int, vehicles_per_route : int):
+    def generate_rou_file(self, simulation_time : int, vehicles_per_route : list[int]):
 
         rou_file = RouFile()
         # Vehicle type definition
@@ -64,10 +64,10 @@ class Service():
         rou_file.new_route(routes[2],["-E3","-E2"]) # Est vers Ouest
         rou_file.new_route(routes[3],["E2","E3"]) # Ouest vers Est
 
-        # Generate 25 vehicules with random depart on each route
-        for route in routes:
-            for i in range(vehicles_per_route):
-                rou_file.new_vehicle("veh{}".format(i), route, "car", rd.randint(0,simulation_time), (1,0,0))
+        # Generate a number of vehicle 
+        for i in range(len(routes)):
+            for j in range(vehicles_per_route[i]):
+                rou_file.new_vehicle("veh{}".format(i), routes[i], "car", rd.randint(0,simulation_time), (1,0,0))
             
 
         # Save file
