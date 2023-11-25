@@ -20,7 +20,7 @@ class GeneticConfig():
 
 
 
-    def load_from_file(self, file : str = "env"):
+    def load_from_file(self, file : str = "config.json"):
         with open(file, 'r') as json_file:
             values = json.load(json_file)
 

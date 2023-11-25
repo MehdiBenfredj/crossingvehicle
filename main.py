@@ -8,7 +8,7 @@ coords = ((0,0),(0,1),(1,1),(1,0),(0,0))
 srv = Service("sumofiles", Polygon(coords))
 
 # Générer le rou file
-srv.generate_rou_file()
+srv.generate_rou_file(600, [20, 20, 20, 20])
 
 # Lancer sumo avec python
 traci.start(["sumo-gui", "-c", "sumofiles/config.sumocfg"])

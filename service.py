@@ -31,7 +31,7 @@ class Service():
         return vehicles_in_area
 
 
-    def apply_chromosom(self, intersection_id : str, chromosom : tuple):
+    def apply_chromosom(self, intersection_id : str, chromosom : list[float]):
 
         phases = [
             traci.TraCIPhase(chromosom[0], "GrGr", chromosom[0], chromosom[0]),

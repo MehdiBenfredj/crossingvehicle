@@ -25,10 +25,12 @@ class GeneticAlgorithm():
 
         return chromosom
 
-
+    # TODO : finir fonction
     def _generate_initial_pop(self) -> list[list[float]]:
-        pass
-        
+       # [[chromosom, fitness]...]
+        chromosoms = []
+        for i in range(self.params.initial_pop_size):
+            chromosoms.append([random.randint(self.params.min_phase_time, self.params.max_cycle_time) for i in range(len(self.params.vehicles_per_route))])
 
     
 
