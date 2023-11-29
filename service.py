@@ -19,6 +19,7 @@ class Service():
         for id in ids:
             pos = traci.vehicle.getPosition(id)
             id_pos.append((id,pos))
+        return id_pos
 
 
     def _get_vehicle_in_area(self) -> list[str]:
@@ -31,15 +32,9 @@ class Service():
         return vehicles_in_area
 
 
-    def apply_chromosom(self, intersection_id : str, chromosom : list[float]):
+    def apply_chromosom(self, intersection_id : str, chromosom : list[float], phases : list[str]):
 
-        phases = [
-            traci.TraCIPhase(chromosom[0], "GrGr", chromosom[0], chromosom[0]),
-            traci.TraCIPhase(chromosom[1], "yryr", chromosom[1], chromosom[1]),
-            traci.TraCIPhase(chromosom[2], "rGrG", chromosom[2], chromosom[2]),
-            traci.TraCIPhase(chromosom[3], "ryry", chromosom[3], chromosom[3])
-        ]
-
+        phases = [traci.TraCIPhase(chromosom[i], phases[i], chromosom[i], chromosom[i]) for i in range(len(phases))]
         logic = traci.TraCILogic("0", 0, 0, phases)
         traci.trafficlight.setProgramLogic(intersection_id, logic)
 
@@ -51,24 +46,20 @@ class Service():
 
 
 
-    def generate_rou_file(self, simulation_time : int, vehicles_per_route : list[int]):
+    def generate_rou_file(self, simulation_time : int, routes : list):
 
         rou_file = RouFile()
         # Vehicle type definition
         rou_file.new_vehicle_type("car",1.0,5.0,4.0,2.5,50.0,0.5,"passenger")
 
         # Routes definition
-        routes = ["trajetNS", "trajetSN", "trajetEW", "trajetWE"]
-        rou_file.new_route(routes[0],["E0","E1"]) # Nord vers Sud
-        rou_file.new_route(routes[1],["-E1","-E0"]) # Sud vers Nord
-        rou_file.new_route(routes[2],["-E3","-E2"]) # Est vers Ouest
-        rou_file.new_route(routes[3],["E2","E3"]) # Ouest vers Est
+        for route in routes:
+            rou_file.new_route(route["label"],route["route"]) # Nord vers Sud
 
         # Generate a number of vehicle 
         for i in range(len(routes)):
-            for j in range(vehicles_per_route[i]):
-                rou_file.new_vehicle("veh{}".format(i), routes[i], "car", rd.randint(0,simulation_time), (1,0,0))
-            
+            for j in range(routes[i]["vehicles"]):
+                rou_file.new_vehicle("veh{}_{}".format(i,j), routes[i]["label"], "car", rd.randint(0,simulation_time), (1,0,0))
 
         # Save file
         rou_file.save(self.path)

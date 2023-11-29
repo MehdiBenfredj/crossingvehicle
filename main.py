@@ -1,17 +1,12 @@
-import libsumo as traci
+from algcfg import GeneticConfig
+from genetic import GeneticAlgorithm
+
 from service import Service
 from shapely import Polygon
+import os
 
-coords = ((0,0),(0,1),(1,1),(1,0),(0,0))
+conf = GeneticConfig()
+conf.load_from_file(os.getenv("ALGCONF","config.json"))
 
-# Créer un Service
-srv = Service("sumofiles", Polygon(coords))
-
-# Générer le rou file
-srv.generate_rou_file(600, [20, 20, 20, 20])
-
-# Lancer sumo avec python
-traci.start(["sumo-gui", "-c", "sumofiles/config.sumocfg"])
-
-srv.apply_chromosom("J1", (3,3,3,3))
-print(traci.trafficlight.getCompleteRedYellowGreenDefinition("J1"))
+alg = GeneticAlgorithm(conf)
+alg.run()
