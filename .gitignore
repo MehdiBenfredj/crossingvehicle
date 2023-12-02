@@ -1,0 +1,6 @@
+.venv
+__pycache__
+config.json
+sumofiles
+__pycache__
+sumofiles/generated.rou.xml

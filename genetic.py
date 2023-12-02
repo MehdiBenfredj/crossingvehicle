@@ -17,11 +17,13 @@ class GeneticAlgorithm():
         
 
 
+    # Make sure the chromosom is valid (sum of phases = max_cycle_time)
+    # If not, add or remove to a phase time randomly
     def _sanitize_chromosom(self, chromosom : list) -> list:
 
         indexes = [i for i in range(len(chromosom))]
         while sum(chromosom) != self.params.max_cycle_time:
-            index = random.choices(indexes, weights=chromosom, k=1)[0]
+            index = random.choices(indexes, k=1)[0]
             if sum(chromosom) > self.params.max_cycle_time:
                 if chromosom[index] > self.params.min_phase_time:
                     chromosom[index] -= 1
@@ -31,18 +33,26 @@ class GeneticAlgorithm():
         return chromosom
 
 
+    def _generate_sanitized_chromosome(self) -> list[float]:
+        chromosome = []
+        for j in range(len(self.params.phases)):
+            chromosome.append(random.randint(self.params.min_phase_time, self.params.max_cycle_time))
+        return self._sanitize_chromosom(chromosome)
+
+
     def _generate_initial_pop(self) -> list[list[float]]:
         chromosoms = []
         for i in range(self.params.initial_pop_size):
-            chromosom = []
-            for j in range(len(self.params.phases)):
-                chromosom.append(random.randint(self.params.min_phase_time, self.params.max_cycle_time))
-            chromosom = self._sanitize_chromosom(chromosom)
-            chromosoms.append([chromosom,self._compute_fitness(chromosom)])
+            chromosome = self._generate_sanitized_chromosome()
+            chromosoms.append([chromosome,self._compute_fitness(chromosome)])
         return chromosoms
 
-    
 
+
+    # Compute the fitness of a chromosom
+    # The fitness is the average time spent by a vehicle in the area
+    # The chromosom is applied to the intersection and the simulation is run
+    # until there is no more vehicle in the area
     def _compute_fitness(self, chromosom : list) -> float:
         
         time_per_vehicle = {}
@@ -76,31 +86,30 @@ class GeneticAlgorithm():
 
 
 
-    def _crossing(self, chromosom_a : list, chromosom_b : list) -> list[float]:
-
-        parts = self.params.crossing_points+1
-        loc = int(len(chromosom_a)/parts)
+    def _crossing(self, chromosom_a: list, chromosom_b: list) -> list[float]:
+        parts = self.params.crossing_points + 1
+        loc = int(len(chromosom_a) / parts)
         sub_lists_a = []
         sub_lists_b = []
 
         for i in range(parts):
-            if i == parts-1:
-                sub_lists_a.append(chromosom_a[i*loc:])
-                sub_lists_b.append(chromosom_b[i*loc:])
+            if i == parts - 1:
+                sub_lists_a.append(chromosom_a[i * loc:])
+                sub_lists_b.append(chromosom_b[i * loc:])
                 continue
-            sub_lists_a.append(chromosom_a[i*loc:(i+1)*loc])
-            sub_lists_b.append(chromosom_b[i*loc:(i+1)*loc])
+            sub_lists_a.append(chromosom_a[i * loc:(i + 1) * loc])
+            sub_lists_b.append(chromosom_b[i * loc:(i + 1) * loc])
 
         chromosom_a = []
         chromosom_b = []
         for i in range(len(sub_lists_a)):
-            if i%2 == 0:
+            if random.random() <= 0.5:
                 chromosom_a.extend(sub_lists_a[i])
                 chromosom_b.extend(sub_lists_b[i])
             else:
                 chromosom_a.extend(sub_lists_b[i])
                 chromosom_b.extend(sub_lists_a[i])
-        
+
         return [chromosom_a, chromosom_b]
 
 
@@ -135,8 +144,23 @@ class GeneticAlgorithm():
         mutated_children = [self._mutation(child) for child in children]
         children_and_fitness = [[child, self._compute_fitness(child)] for child in mutated_children]
         
+        # number of chromosomes to keep from the previous population
         keep_parents = len(self.population_and_fitness) - self.params.children_number
-        new_pop = sorted(self.population_and_fitness, key=lambda x: x[1])[:keep_parents]
+        sorted_population = sorted(self.population_and_fitness, key=lambda x: x[1])
+        # keep the best chromosomes from the previous population
+        # and make sure there is no duplicates
+        new_pop = []
+        new_pop_fitnesses = []
+        for(index, item) in enumerate(sorted_population):
+            if index < keep_parents and item[1] not in new_pop_fitnesses:
+                new_pop.append(item)
+                new_pop_fitnesses.append(item[1])
+        
+        if(len(new_pop) != keep_parents):
+            for i in range(keep_parents - len(new_pop)):
+                chromosome = self._generate_sanitized_chromosome()
+                new_pop.append([chromosome, self._compute_fitness(chromosome)])
+
         new_pop.extend(children_and_fitness)
         
         self.population_and_fitness = new_pop
@@ -151,6 +175,7 @@ class GeneticAlgorithm():
         print("La meilleure solution est la suivante :")
         sorted_pop = sorted(self.population_and_fitness, key=lambda x: x[1])
         print(sorted_pop[0][0])
+        return(sorted_pop[0][1])
 
         
 
