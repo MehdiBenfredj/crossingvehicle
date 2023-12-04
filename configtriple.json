@@ -1,3 +1,6 @@
+### These is just an exemple now (for using more phases and more routes)
+### Note that polygons & intersection_ids should be an array of strings
+### Refer to configcomplex.json for the right conf
 {
     "duration": 600,
     "phases": [

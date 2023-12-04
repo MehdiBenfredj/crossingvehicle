@@ -7,9 +7,11 @@ import os
 
 class Service():
 
-    def __init__(self, sumo_folder : str, area : Polygon) -> None:
+    def __init__(self, sumo_folder : str, areas : [Polygon], intersection_ids : [str]) -> None:
         self.path = os.path.abspath(sumo_folder)
-        self.area = area
+        self.areas = {}
+        for index, intersection_id in enumerate(intersection_ids):
+            self.areas[intersection_id] = areas[index]
         os.makedirs(self.path, exist_ok=True)
 
 
@@ -22,27 +24,38 @@ class Service():
         return id_pos
 
 
-    def _get_vehicle_in_area(self) -> list[str]:
-        vehicles_in_area = []
+    def _get_vehicle_in_intersection(self, intersection_id : str) -> list[str]:
+        vehicles_in_intersection = []
         vehicles = self.__get_all_vehicles_and_pos()
         for vehicle in vehicles:
             point = Point(vehicle[1][0], vehicle[1][1])
-            if self.area.contains(point):
-                vehicles_in_area.append(vehicle[0])
-        return vehicles_in_area
+            if self.areas[intersection_id].contains(point):
+                vehicles_in_intersection.append(vehicle[0])
+        return vehicles_in_intersection
 
 
     def apply_chromosom(self, intersection_id : str, chromosom : list[float], phases : list[str]):
 
         phases = [traci.TraCIPhase(chromosom[i], phases[i], chromosom[i], chromosom[i]) for i in range(len(phases))]
         logic = traci.TraCILogic("0", 0, 0, phases)
+        try:
+            #print(traci.trafficlight.getProgram("J2"))
+            # get the phases of the current program
+            logic2 = traci.trafficlight.getCompleteRedYellowGreenDefinition("J2")
+            #print(logic)
+            phases2 = logic2[0].getPhases()
+            #for phase in phases2:
+                #print("Duration:", phase.duration)
+                #print("State:", phase.state)
+        except:
+            pass
         traci.trafficlight.setProgramLogic(intersection_id, logic)
 
 
 
-    def step(self) -> list[str]:
+    def step(self, intersection_id : str) -> list[str]:
         traci.simulationStep()
-        return self._get_vehicle_in_area()
+        return self._get_vehicle_in_intersection(intersection_id)
 
 
 

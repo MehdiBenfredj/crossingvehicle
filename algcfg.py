@@ -9,8 +9,8 @@ class GeneticConfig():
         self.sumo_folder = None
         self.sumo_cfg_file = None
         self.iterations = None
-        self.intersection_id = None
-        self.polygon = None
+        self.intersection_ids = []
+        self.polygons = []
         self.min_phase_time = None
         self.max_cycle_time = None
         self.parents_number = None
@@ -33,8 +33,8 @@ class GeneticConfig():
         self.sumo_folder = values["sumo_folder"]
         self.sumo_cfg_file = values["sumo_cfg_file"]
         self.iterations = values["iterations"]
-        self.intersection_id = values["intersection_id"]
-        self.polygon = values["polygon"]
+        self.intersection_ids = values["intersection_ids"]
+        self.polygons = values["polygons"]
         self.min_phase_time = values["min_phase_time"]
         self.max_cycle_time = values["max_cycle_time"]
         self.parents_number = values["parents_number"]
