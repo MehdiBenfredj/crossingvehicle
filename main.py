@@ -6,7 +6,7 @@ from shapely import Polygon
 import os
 
 conf = GeneticConfig()
-conf.load_from_file(os.getenv("ALGCONF","configtriple.json"))
+conf.load_from_file(os.getenv("ALGCONF","configcomplex.json"))
 
 alg = GeneticAlgorithm(conf)
 
