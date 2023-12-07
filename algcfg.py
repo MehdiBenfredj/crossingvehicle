@@ -3,14 +3,14 @@ import json
 class GeneticConfig():
     def __init__(self) -> None:
         self.duration = None
+        self.net_file = None
         self.phases = []
         self.routes = []
         self.gui = None
         self.sumo_folder = None
         self.sumo_cfg_file = None
         self.iterations = None
-        self.intersection_ids = []
-        self.polygons = []
+        self.intersections = []
         self.min_phase_time = None
         self.max_cycle_time = None
         self.parents_number = None
@@ -27,13 +27,14 @@ class GeneticConfig():
             values = json.load(json_file)
 
         self.duration = values["duration"]
+        self.net_file = values["net_file"]
         self.phases = values["phases"]
         self.routes = values["routes"]
         self.gui = values["gui"]
         self.sumo_folder = values["sumo_folder"]
         self.sumo_cfg_file = values["sumo_cfg_file"]
         self.iterations = values["iterations"]
-        self.intersection_ids = values["intersection_ids"]
+        self.intersections = values["intersections"]
         self.polygons = values["polygons"]
         self.min_phase_time = values["min_phase_time"]
         self.max_cycle_time = values["max_cycle_time"]

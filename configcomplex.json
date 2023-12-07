@@ -1,6 +1,8 @@
 {
-    "duration": 600,
-	"phases": ["GrGr", "yryr", "rGrG", "ryry"],
+    "gui": false,
+    "sumo_folder": "sumofiles",
+    "sumo_cfg_file": "config.sumocfg",
+    "net_file": "configcomplex.json",
     "routes": [
         {
             "label": "ns1",
@@ -33,14 +35,21 @@
             "route": ["E0","E1","E2"]
         }
     ],
-    "gui": false,
-    "sumo_folder": "sumofiles",
-    "sumo_cfg_file": "config.sumocfg",
+    
+    "intersections": [
+        {
+            "id": "J1",
+            "polygon": "POLYGON((80.0 80.0,80.0 120.0,120.0 120.0,120.0 80.0,80.0 80.0))",
+            "phases": ["GrGr", "yryr", "rGrG", "ryry"]
+        },
+        {
+            "id": "J2",
+            "polygon": "POLYGON((280.0 80.0,280.0 120.0,320.0 120.0,320.0 80.0,280.0 80.0))",
+            "phases": ["GrGr", "yryr", "rGrG", "ryry"]
+        }
+    ],
+    "duration": 600,
     "iterations": 100,
-	"#comment" : "make sure to have the same order between junctions & polygons, J1  => Polygon1, J2 => Polygon 2",
-    "intersection_ids": ["J1","J2"],
-    "polygons": ["POLYGON((80.0 80.0,80.0 120.0,120.0 120.0,120.0 80.0,80.0 80.0))",
-				 "POLYGON((280.0 80.0,280.0 120.0,320.0 120.0,320.0 80.0,280.0 80.0))"],
     "min_phase_time": 3,
     "max_cycle_time": 60,
     "parents_number": 3,

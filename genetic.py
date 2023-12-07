@@ -1,6 +1,5 @@
 from service import Service
 from algcfg import GeneticConfig
-from shapely import wkt
 import random
 import libsumo as traci
 import os
@@ -10,16 +9,19 @@ import os
 class GeneticAlgorithm():
 
     def __init__(self, config : GeneticConfig) -> None:
+
         self.params = config
         self.populations_and_fitness = {}
-        self.srv = Service(config.sumo_folder, wkt.loads(self.params.polygons), self.params.intersection_ids)
-        self.best_chromosomes = {}
+        self.srv = Service(config.sumo_folder, self.params.intersections)
+        self.best_chromosoms = {}
+
         self.srv.generate_rou_file(self.params.duration, self.params.routes)
+        self.srv.generate_conf_file(self.params.net_file)
+
         for intersection_id in self.params.intersection_ids:
             self.populations_and_fitness[intersection_id] = self._generate_initial_pop(intersection_id)
         
-        
-
+    
 
     # Make sure the chromosom is valid (sum of phases = max_cycle_time)
     # If not, add or remove to a phase time randomly
@@ -70,7 +72,7 @@ class GeneticAlgorithm():
         for intersection_idd in self.params.intersection_ids:
             if intersection_idd != intersection_id:
                 try :
-                    self.srv.apply_chromosom(intersection_idd, self.best_chromosomes[intersection_idd], self.params.phases)
+                    self.srv.apply_chromosom(intersection_idd, self.best_chromosoms[intersection_idd], self.params.phases)
                 except:
                     pass
 
@@ -98,7 +100,7 @@ class GeneticAlgorithm():
 
     def _select_parents(self, intersection_id : str) -> list[list[float]]:
         sorted_pop = sorted(self.populations_and_fitness[intersection_id], key=lambda x: x[1])
-        self.best_chromosomes[intersection_id] = sorted_pop[0][0]
+        self.best_chromosoms[intersection_id] = sorted_pop[0][0]
         parents = [item[0] for item in sorted_pop[:self.params.parents_number]]
         return parents
 
@@ -147,6 +149,8 @@ class GeneticAlgorithm():
         
             return self._sanitize_chromosom(chromosom)
         return chromosom
+
+
 
     def _update_populations(self):
         # parents dict (intersection_id : parents) 
