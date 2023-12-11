@@ -1,0 +1,50 @@
+{
+    "gui": false,
+    "sumo_folder": "sumofiles",
+    "sumo_cfg_file": "config.sumocfg",
+    "net_file": "simple_inter.net.xml",
+    "duration": 600,
+
+    "iterations": 60,
+    "parents_number": 4,
+    "children_number" : 4,
+    "crossing_points": 1,
+    "crossing_mode": "classic",
+    "mutation_proba": 0.8,
+    "initial_pop_size": 8,
+
+    "intersections": [
+        {
+            "kind": "tf",
+            "id": "J1",
+            "center": [50.0, 50.0],
+            "visibility": 20.0,
+            "phases": ["GrGr", "yryr", "rGrG", "ryry"],
+            "min_phase_time": 3,
+            "cycle_time": 60
+        }
+    ],
+
+    "routes": [
+        {
+            "label": "ns",
+            "vehicles": 100,
+            "edges": ["E0","E1"]
+        },
+		{
+            "label": "sn",
+            "vehicles": 10,
+            "edges": ["-E1","-E0"]
+        },
+		{
+            "label": "ew",
+            "vehicles": 10,
+            "edges": ["-E3","-E2"]
+        },
+		{
+            "label": "we",
+            "vehicles": 10,
+            "edges": ["E2","E3"]
+        }
+    ]
+}

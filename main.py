@@ -1,23 +1,29 @@
-from algcfg import GeneticConfig
 from genetic import GeneticAlgorithm
-
-from service import Service
-from shapely import Polygon
+from algcfg import GeneticConfig
+import sys
 import os
 
+try:
+    config_file = sys.argv[1]
+except:
+    print("You must pass a configuration file as first argument.")
+    sys.exit(1)
+
+if not os.path.exists(config_file):
+    print("The configuration file does not exit.")
+    sys.exit(1)
+
+try:
+    output_file = sys.argv[2]
+except:
+    print("You must pass an output file name as second argument.")
+    sys.exit(1)
+
 conf = GeneticConfig()
-conf.load_from_file(os.getenv("ALGCONF","configcomplex.json"))
+conf.load_from_file(config_file)
+conf.set_output_file_and_mkdirs(output_file)
 
 alg = GeneticAlgorithm(conf)
-
-
 alg.run()
 
 
-####
-#Test changes
-#fitnesses = []
-#for i in range(10):
-#	fitnesses.append(alg.run())
-#print(sum(fitnesses)/10)
-####

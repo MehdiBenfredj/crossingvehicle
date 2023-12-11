@@ -1,5 +1,14 @@
 import os
 
+class Route():
+
+    def __init__(self, label : str, vehicles : int, edges : list[str]) -> None:
+        self.label = label
+        self.vehicles = vehicles
+        self.edges = edges
+
+
+
 class RouFile():
 
     def __init__(self) -> None:

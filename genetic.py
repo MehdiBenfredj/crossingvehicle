@@ -1,231 +1,225 @@
-from service import Service
 from algcfg import GeneticConfig
-import random
+from roufilebuilder import RouFile
+from sumoconfbuilder import SumoConfFile
+from population import Population
 import libsumo as traci
+import logging
+import random
+import csv
 import os
 
-# TODO : reduire les appels à sorted
 
 class GeneticAlgorithm():
-
-    def __init__(self, config : GeneticConfig) -> None:
-
-        self.params = config
-        self.populations_and_fitness = {}
-        self.srv = Service(config.sumo_folder, self.params.intersections)
-        self.best_chromosoms = {}
-
-        self.srv.generate_rou_file(self.params.duration, self.params.routes)
-        self.srv.generate_conf_file(self.params.net_file)
-
-        for intersection_id in self.params.intersection_ids:
-            self.populations_and_fitness[intersection_id] = self._generate_initial_pop(intersection_id)
-        
     
+    def __init__(self, conf : GeneticConfig) -> None:
+        self.conf = conf
 
-    # Make sure the chromosom is valid (sum of phases = max_cycle_time)
-    # If not, add or remove to a phase time randomly
-    def _sanitize_chromosom(self, chromosom : list) -> list:
-
-        indexes = [i for i in range(len(chromosom))]
-        while sum(chromosom) != self.params.max_cycle_time:
-            index = random.choices(indexes, k=1)[0]
-            if sum(chromosom) > self.params.max_cycle_time:
-                if chromosom[index] > self.params.min_phase_time:
-                    chromosom[index] -= 1
-            else:
-                chromosom[index] += 1
-
-        return chromosom
-
-
-    def _generate_sanitized_chromosome(self) -> list[float]:
-        chromosome = []
-        for j in range(len(self.params.phases)):
-            chromosome.append(random.randint(self.params.min_phase_time, self.params.max_cycle_time))
-        return self._sanitize_chromosom(chromosome)
-
-
-    def _generate_initial_pop(self, intersection_id : str) -> list[list[float]]:
-        chromosoms = []
-        for i in range(self.params.initial_pop_size):
-            chromosome = self._generate_sanitized_chromosome()
-            chromosoms.append([chromosome,self._compute_fitness(chromosome , intersection_id)])
-        return chromosoms
-
-
-
-    # Compute the fitness of a chromosom
-    # The fitness is the average time spent by a vehicle in the area
-    # The chromosom is applied to the intersection and the simulation is run
-    # until there is no more vehicle in the area
-    def _compute_fitness(self, chromosom : list, intersection_id : str) -> float:
+        self.intersections = self.conf.intersections
+        self.populations : list[Population] = []
         
-        time_per_vehicle = {}
-        conf_file_path = os.path.join(self.params.sumo_folder, self.params.sumo_cfg_file)
-        if self.params.gui:
+        self.__generate_rou_file()
+        self.__generate_conf_file()
+
+
+    def __generate_rou_file(self):
+
+        rou_file = RouFile()
+        # Vehicle type definition
+        rou_file.new_vehicle_type("car",1.0,5.0,4.0,2.5,50.0,0.5,"passenger")
+
+        # Routes definition
+        for route in self.conf.routes:
+            rou_file.new_route(route.label, route.edges) # Nord vers Sud
+
+        # Generate a number of vehicle 
+        for i in range(len(self.conf.routes)):
+            for j in range(self.conf.routes[i].vehicles):
+                rou_file.new_vehicle("veh{}_{}".format(i,j), self.conf.routes[i].label, "car", random.randint(0, self.conf.duration), (1,0,0))
+
+        # Save file
+        rou_file.save(self.conf.sumo_folder)
+        logging.info("Rou file generated")
+
+
+    def __generate_conf_file(self):
+
+        sumo_conf = SumoConfFile(self.conf.net_file)
+        sumo_conf.save(self.conf.sumo_folder)
+        logging.info("Conf file generated")
+
+    
+    def __generate_initial_pops(self):
+        
+        for i in range(len(self.intersections)):
+            
+            logging.info("Creating initial pop for intersection {}".format(self.intersections[i].id))
+            pop = Population()
+            chromosoms = self.intersections[i].get_initial_chromosoms(self.conf.initial_pop_size)
+
+            for chrom in chromosoms:
+                fitness = self._compute_fitness(i, chrom)
+                pop.insert(chrom, fitness)
+            
+            self.populations.append(pop)
+            logging.info("Population created")
+            
+    
+    def _compute_fitness(self, intersection_index : int, chromosom : list[float]) -> float:
+        
+        time_per_vehicule = {}
+
+        # Launch simulation
+        conf_file_path = os.path.join(self.conf.sumo_folder, self.conf.sumo_cfg_file)
+        if self.conf.gui:
             traci.start(["sumo-gui", "-c", conf_file_path])
         else:
             traci.start(["sumo", "-c", conf_file_path])
+        
+        # Freeze other intersections with the best chromosom or the default chromosom:
+        for i in range(len(self.intersections)):
 
-        self.srv.apply_chromosom(intersection_id, chromosom, self.params.phases)
-        for intersection_idd in self.params.intersection_ids:
-            if intersection_idd != intersection_id:
-                try :
-                    self.srv.apply_chromosom(intersection_idd, self.best_chromosoms[intersection_idd], self.params.phases)
+            if i != intersection_index:
+
+                try:
+                    best = self.populations[i].get_best_chrom()
                 except:
-                    pass
+                    best = self.intersections[i].get_default_chromosom()
 
-        def1 = traci.trafficlight.getCompleteRedYellowGreenDefinition("J1")
-        def2 = traci.trafficlight.getCompleteRedYellowGreenDefinition("J2")
+                self.intersections[i].apply_chromosom()
+        
+        # Apply chromosom to the good intersection
+        self.intersections[intersection_index].apply_chromosom(chromosom)
+
+        # Run simulation step by step and compute cost
         while traci.simulation.getMinExpectedNumber() > 0:
-            
-            vehicles_in_aera = self.srv.step(intersection_id)
-            for vehicule in vehicles_in_aera:
-                if vehicule in time_per_vehicle:
-                    time_per_vehicle[vehicule] += 1
+
+            vehicles_in_inter = self._step(intersection_index)
+            for vehicle in vehicles_in_inter:
+                if vehicle in time_per_vehicule:
+                    time_per_vehicule[vehicle] += 1
                 else:
-                    time_per_vehicle[vehicule] = 1
+                    time_per_vehicule[vehicle] = 1
         
         traci.close()
-        
-        try :
-            # s'il n'y a pas de vehicule dans la zone, on renvoie 10000
-            return sum(time_per_vehicle.values())/len(time_per_vehicle)
+
+        try:
+            result = sum(time_per_vehicule.values())/len(time_per_vehicule)
         except:
-            # 10000 est la valeur (théorique) maximale de fitness
-            return 10000
+            result = 10000
+        
+        return result
+
+    
+
+    def _step(self, watch_inter_id : int) -> list[str]:
+
+        # Step
+        traci.simulationStep()
+
+        # Call all callbacks
+        for i in range(len(self.intersections)):
+            self.intersections[i].step_callback()
+
+        # Get vehicles in the target intersection
+        id_and_pos = []
+        ids = traci.vehicle.getIDList()
+        for id in ids:
+            pos = traci.vehicle.getPosition(id)
+            id_and_pos.append((id, pos))
+        
+        vehicles_in_inter = []
+        for couple in id_and_pos:
+            if self.intersections[watch_inter_id].contains(couple[1]):
+                vehicles_in_inter.append(couple[0])
+        
+        return vehicles_in_inter
+    
 
 
+    def _crossing(self, chromosom_a : list[float], chromosom_b : list[float]) -> list[list[float]]:
+        
+        parts = self.conf.crossing_points + 1
+        loc = int(len(chromosom_a)/parts)
 
-    def _select_parents(self, intersection_id : str) -> list[list[float]]:
-        sorted_pop = sorted(self.populations_and_fitness[intersection_id], key=lambda x: x[1])
-        self.best_chromosoms[intersection_id] = sorted_pop[0][0]
-        parents = [item[0] for item in sorted_pop[:self.params.parents_number]]
-        return parents
-
-
-
-    def _crossing(self, chromosom_a: list, chromosom_b: list) -> list[float]:
-        parts = self.params.crossing_points + 1
-        loc = int(len(chromosom_a) / parts)
+        # Cut chromosoms
         sub_lists_a = []
         sub_lists_b = []
-
         for i in range(parts):
-            if i == parts - 1:
+            if i == parts - 1: 
                 sub_lists_a.append(chromosom_a[i * loc:])
                 sub_lists_b.append(chromosom_b[i * loc:])
                 continue
-            sub_lists_a.append(chromosom_a[i * loc:(i + 1) * loc])
-            sub_lists_b.append(chromosom_b[i * loc:(i + 1) * loc])
-
+            sub_lists_a.append(chromosom_a[i * loc: (i+1) * loc])
+            sub_lists_b.append(chromosom_b[i * loc: (i+1) * loc])
+        
+        # Crossing
         chromosom_a = []
         chromosom_b = []
-        for i in range(len(sub_lists_a)):
-            if random.random() <= 0.5:
-                chromosom_a.extend(sub_lists_a[i])
-                chromosom_b.extend(sub_lists_b[i])
-            else:
-                chromosom_a.extend(sub_lists_b[i])
-                chromosom_b.extend(sub_lists_a[i])
-
+        
+        if self.conf.crossing_mode == "random":
+            for j in range(len(sub_lists_a)):
+                if random.random() <= 0.5:
+                    chromosom_a.extend(sub_lists_a[i])
+                    chromosom_b.extend(sub_lists_b[i])
+                else:
+                    chromosom_a.extend(sub_lists_b[i])
+                    chromosom_b.extend(sub_lists_a[i])
+        else:
+            for j in range(len(sub_lists_a)):
+                if i%2 == 0:
+                    chromosom_a.extend(sub_lists_a[i])
+                    chromosom_b.extend(sub_lists_b[i])
+                else:
+                    chromosom_a.extend(sub_lists_b[i])
+                    chromosom_b.extend(sub_lists_a[i])
+        
         return [chromosom_a, chromosom_b]
+            
 
 
-
-    def _mutation(self, chromosom : list) -> list:
-
-        rand_number = random.random()
-        if rand_number < self.params.mutation_proba:
-            rand_index = random.randint(0, len(chromosom)-1)
-            rand_modif = random.randint(1,3)
-            rand_number = random.random()
-            if rand_number <= 0.5:
-                if chromosom[rand_index] - rand_modif >= self.params.min_phase_time:
-                    chromosom[rand_index] -= rand_modif
-            else:
-                chromosom[rand_index] += rand_modif
+    def _update_pops(self):
         
-            return self._sanitize_chromosom(chromosom)
-        return chromosom
+        for i in range(len(self.intersections)):
+            parents = self.populations[i].get_parents(self.conf.parents_number)
+            children = []
+
+            while len(children) < self.conf.children_number:
+                couple = random.choices(parents, k=2)
+                crossed = self._crossing(couple[0], couple[1])
+
+                children.append(self.intersections[i].mutation(crossed[0], self.conf.mutation_proba))
+                children.append(self.intersections[i].mutation(crossed[1], self.conf.mutation_proba))
+    
+            
+            if len(children) > self.conf.children_number:
+                children.pop()
+            
+            for child in children:
+                fitness = self._compute_fitness(i, child)
+                self.populations[i].insert(child, fitness)
+
+            self.populations[i].del_worst_chromosoms(len(children))
 
 
 
-    def _update_populations(self):
-        # parents dict (intersection_id : parents) 
-        # select the best parents
-        parents = {}
-        for intersection_id in self.params.intersection_ids:
-            parents[intersection_id] = self._select_parents(intersection_id)
+    def _save_in_csv(self):
+    
+        with open(self.conf.output_file, "a", newline="", encoding="utf-8", errors="replace") as csv_file:
+            writer = csv.writer(csv_file)
 
-        # children are also a dict (intersection_id : children[])
-        children = { intersection_id : [] for intersection_id in self.params.intersection_ids }
-
-        # crossing parents to generate children
-        for intersection_id in self.params.intersection_ids:
-            while len(children[intersection_id]) != self.params.children_number:
-                couple = random.sample(parents[intersection_id], k=2)
-                children[intersection_id].extend(self._crossing(couple[0], couple[1]))
+            for i in range(len(self.intersections)):
+                row = [self.intersections[i].id, self.populations[i].get_best_fitness(), self.populations[i].average_fitness(), *self.populations[i].get_best_chrom()]
+                writer.writerow(row)
 
 
-        # mutation of children
-        mutated_children = {}
-        children_and_fitness = {}
-        for intersection_id in self.params.intersection_ids:
-            mutated_children[intersection_id] = [self._mutation(child) for child in children[intersection_id]]
-            children_and_fitness[intersection_id] = [[child, self._compute_fitness(child, intersection_id)] for child in mutated_children[intersection_id]]
+    def run(self):
+
+        self.__generate_initial_pops()
+        self._save_in_csv()
+
+        for i in range(self.conf.iterations):
+            self._update_pops()
+            self._save_in_csv()
         
-        # number of chromosomes to keep from the previous population
-        keep_parents = self.params.initial_pop_size - self.params.children_number
-
-        # sort the population by fitness
-        sorted_populations = {}
-        for intersection_id in self.params.intersection_ids:
-            sorted_populations[intersection_id] = sorted(self.populations_and_fitness[intersection_id], key=lambda x: x[1])
-
-        # keep the best chromosomes from the previous population
-        # and make sure there is no duplicates
-        new_populations = {}
-        for intersection_id in self.params.intersection_ids:
-            new_pop_fitnesses = []
-            new_populations[intersection_id] = []
-            for(index, item) in enumerate(sorted_populations[intersection_id]):
-                if index < keep_parents and item[1] not in new_pop_fitnesses:
-                    new_populations[intersection_id].append(item)
-                    new_pop_fitnesses.append(item[1])
-
-        # if there is not enough chromosomes, generate new ones
-        for intersection_id in self.params.intersection_ids:
-            number_of_new_chromosomes = keep_parents - len(new_populations[intersection_id])
-            if(number_of_new_chromosomes != 0):
-                for i in range(number_of_new_chromosomes):
-                    chromosome = self._generate_sanitized_chromosome()
-                    new_populations[intersection_id].append([chromosome, self._compute_fitness(chromosome, intersection_id)])
-
-        # add the children to the new population
-        for intersection_id in self.params.intersection_ids:
-            new_populations[intersection_id].extend(children_and_fitness[intersection_id])
-        
-        # update the population
-        self.populations_and_fitness = new_populations
-        print("\"La nouvelle population est \" :")
-        print(self.populations_and_fitness)
-        print(",")
-
-
-
-    def run(self) -> None:
-        for i in range(self.params.iterations):
-            self._update_populations()
-        print("La meilleure solution est la suivante :")
-        sorted_pop = sorted(self.populations_and_fitness, key=lambda x: x[1])
-        print(sorted_pop[0][0])
-        return(sorted_pop[0][1])
-
-        
-    def test_run(self) -> None:
-        for i in range(1):
-            self._update_populations()
-        
-        
+        for i in range(len(self.intersections)):
+            print("La meilleure solution pour l'intersection", self.intersections[i].id, "est : ", self.populations[i].get_best_chrom())
