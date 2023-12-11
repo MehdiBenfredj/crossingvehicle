@@ -85,7 +85,7 @@ class GeneticAlgorithm():
                 except:
                     best = self.intersections[i].get_default_chromosom()
 
-                self.intersections[i].apply_chromosom()
+                self.intersections[i].apply_chromosom(best)
         
         # Apply chromosom to the good intersection
         self.intersections[intersection_index].apply_chromosom(chromosom)
