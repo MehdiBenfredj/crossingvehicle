@@ -17,7 +17,6 @@
         {
             "kind": "tf",
             "id": "J1",
-            "center": [50.0, 50.0],
             "visibility": 20.0,
             "phases": ["GrGr", "yryr", "rGrG", "ryry"],
             "min_phase_time": 3,

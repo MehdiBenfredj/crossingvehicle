@@ -4,18 +4,30 @@ import sumolib
 
 class AutoIntersection(Intersection):
 
-    def __init__(self, id: str, center: list[float], visibility: float, max_vehicles : int) -> None:
+    def __init__(self, id: str, center: list[float], visibility: float, edges_id: list[str], edges_len: list[float]) -> None:
         super().__init__(id, center, visibility)
 
-        self.edges = self._get_edges
+        self.edges_id = edges_id
+        self. edges_len = edges_len
         self.crossing = False
         self.chromosom = []
         self.priorities = []
-        self.max_vehicles = max_vehicles
+        self.carousel = Carousel()
+        
 
     
-    def _get_edges(self) -> list[str]:
-        pass
+    def _get_edges_id_and_len(self, net_path: str) -> list[str]:
+
+        edges = sumolib.net.readNet(net_path).getEdges()
+        edges_id=[]
+        edges_len=[]
+
+        for edge in edges:
+            if edge.getToNode().getID() == self.id :
+                edges_id.append(edge.getID())
+                edges_len.append(edge.getLength())
+
+        return edges_id, edges_len
 
 
     def _calc_priority(self, edge_id):
@@ -62,12 +74,50 @@ class AutoIntersection(Intersection):
 
 
     def apply_chromosom(self, chromosom : list[float]):
-        self.chromosom = chromosom
+        self.carousel.set_max_vehicles(chromosom)
 
 
     def step_callback(*args):
         # si crossing == True ==> Checker si encoire vrai ==> 
         # Si crossing == false : 
+        pass
 
 
+
+class Carousel():
+    def __init__(self,edges:list[str], len_edge:list[float]):
+        self.cursor = random.randint(0,len(edges)-1)
+        self.edges = edges
+        self.len_edge = len_edge
+        self.max_vehicles = []
+        self.crossing = False
+        self.ignore_vehicles = [] #the vehicles that will cross the intersection
+    
+    #set stop for the lanes
+    def _maintain_stop(self):
+        pass
+
+    #renvoyer la liste des vehicules sur une voie en ordre de plus proche au plus loin
+    def _get_veh_on_selected_lane(self):
+        pass
+    
+    #les vehicules qui doivent passer
+    def _get_veh_tocross(self):
+        pass
+
+    #changer de voie
+    def _switch_lane(self):
+        pass
+
+    def _update_lane_priorities(self):
+        pass
+
+    #verifier s'il y'a des vehicules qui circulent dans l'intersection
+    def _verify_crossing(self):
+        pass
+
+    def set_max_vehicles(self, value:list[float]):
+        self.max_vehicles = value
+
+    def step():
         pass

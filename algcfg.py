@@ -1,5 +1,6 @@
 from roufilebuilder import Route
-from intersections import TFIntersection, Intersection
+from intersections import TFIntersection, Intersection , AutoIntersection
+import sumolib
 import json
 import csv
 import os
@@ -27,6 +28,9 @@ class GeneticConfig():
         # Output CSV file
         self.output_file = ""
 
+        # Network
+        self.net = None
+
         # Intersections and routes
         self.intersections = []
         self.routes = []
@@ -52,9 +56,14 @@ class GeneticConfig():
         self.mutation_proba = values["mutation_proba"]
         self.initial_pop_size = values["initial_pop_size"]
 
+        self.net = sumolib.net.readNet(os.path.join(self.sumo_folder, self.net_file))
+
         # Intersections and routes
         self.intersections = [self._load_intersection(inter) for inter in values["intersections"]]
         self.routes = [self._load_route(rou) for rou in values["routes"]]
+
+        # Unload network
+        self.net = None
 
 
     def set_output_file_and_mkdirs(self, fp : str):
@@ -76,13 +85,30 @@ class GeneticConfig():
         if inter["kind"] == "tf":
             return TFIntersection(
                 inter["id"],
-                inter["center"],
+                self.net.getNode(inter["id"]).getCoord(),
                 inter["visibility"],
                 inter["id"],
                 inter["phases"],
                 inter["min_phase_time"],
                 inter["cycle_time"]
             )
-        
+        if inter["kind"] == "auto":
+
+            edges = self.net.getEdges()
+            for edge in edges:
+                if edge.getToNode().getID() == inter["id"]:
+                    edges_id.append(edge.getID())
+                    edges_len.append(edge.getLength())
+
+            edges_id=[]
+            edges_len=[]
+
+            return AutoIntersection(
+                inter["id"],
+                self.net.getNode(inter["id"]).getCoord(),
+                inter["visibility"],
+                edges_id,
+                edges_len
+            )
         # Others intersections...
         
