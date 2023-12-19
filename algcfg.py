@@ -94,21 +94,28 @@ class GeneticConfig():
             )
         if inter["kind"] == "auto":
 
+            from_edges_id=[]
+            from_edges_len=[]
+            to_edges_id = []
+
             edges = self.net.getEdges()
             for edge in edges:
                 if edge.getToNode().getID() == inter["id"]:
-                    edges_id.append(edge.getID())
-                    edges_len.append(edge.getLength())
-
-            edges_id=[]
-            edges_len=[]
+                    from_edges_id.append(edge.getID())
+                    from_edges_len.append(edge.getLength())
+                    continue
+                
+                if edge.getFromNode().getID() == inter["id"]:
+                    to_edges_id.append(edge.getID())
+            
 
             return AutoIntersection(
                 inter["id"],
                 self.net.getNode(inter["id"]).getCoord(),
                 inter["visibility"],
-                edges_id,
-                edges_len
+                from_edges_id,
+                from_edges_len,
+                to_edges_id
             )
         # Others intersections...
         

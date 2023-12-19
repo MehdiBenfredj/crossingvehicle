@@ -1,37 +1,25 @@
 from intersections.intersection import Intersection
+from copy import deepcopy
+import libsumo as traci
 import random
-import sumolib
+import math
 
 class AutoIntersection(Intersection):
 
-    def __init__(self, id: str, center: list[float], visibility: float, edges_id: list[str], edges_len: list[float]) -> None:
+    def __init__(self, id: str, center: list[float], visibility: float, from_edges_id: list[str], from_edges_len: list[float], to_edges_id : list[str]) -> None:
         super().__init__(id, center, visibility)
 
-        self.edges_id = edges_id
-        self. edges_len = edges_len
-        self.crossing = False
-        self.chromosom = []
+        self.from_edges_id = from_edges_id
+        self.from_edges_len = from_edges_len
+        self.to_edges_id = to_edges_id
+        self.max_vehicles = []
         self.priorities = []
-        self.carousel = Carousel()
-        
 
-    
-    def _get_edges_id_and_len(self, net_path: str) -> list[str]:
+        self.waiting_time = {}
+        self.cursor = random.randint(0,len(from_edges_id)-1)
 
-        edges = sumolib.net.readNet(net_path).getEdges()
-        edges_id=[]
-        edges_len=[]
-
-        for edge in edges:
-            if edge.getToNode().getID() == self.id :
-                edges_id.append(edge.getID())
-                edges_len.append(edge.getLength())
-
-        return edges_id, edges_len
-
-
-    def _calc_priority(self, edge_id):
-        pass
+        #the vehicles that will cross the intersection
+        self.veh_tocross = []
     
 
     def mutation(self, chromosom : list[float], proba : float) -> list[float]:
@@ -56,6 +44,8 @@ class AutoIntersection(Intersection):
         for i in range(len(chromosom)):
             if chromosom[i] > self.max_vehicles:
                 chromosom[i] = self.max_vehicles
+
+        return chromosom
     
 
     def get_initial_chromosoms(self, n : int) -> list[list[float]]:
@@ -74,50 +64,114 @@ class AutoIntersection(Intersection):
 
 
     def apply_chromosom(self, chromosom : list[float]):
-        self.carousel.set_max_vehicles(chromosom)
+        self.max_vehicles = chromosom
 
 
-    def step_callback(*args):
-        # si crossing == True ==> Checker si encoire vrai ==> 
-        # Si crossing == false : 
-        pass
+    def step_callback(self, *args):
+        
+        self._update_waiting_time()
 
+        if len(self.veh_tocross) == 0:
+            self._update_priorities()
+            self._switch_edge()
+            self._update_veh_tocross()
 
+        self._verify_vehicles_tocross()
+        self._maintain_stop()
 
-class Carousel():
-    def __init__(self,edges:list[str], len_edge:list[float]):
-        self.cursor = random.randint(0,len(edges)-1)
-        self.edges = edges
-        self.len_edge = len_edge
-        self.max_vehicles = []
-        self.crossing = False
-        self.ignore_vehicles = [] #the vehicles that will cross the intersection
     
+    def _update_waiting_time(self):
+        
+        for i in range(len(self.from_edges_id)):
+            veh_and_dists = self._get_veh_and_dist_on_edge(self.from_edges_id[i])
+            vehicles = [couple[0] for couple in veh_and_dists]
+            for vehicle in vehicles:
+                if vehicle not in self.waiting_time:
+                    self.waiting_time[vehicle] = 1
+                else:
+                    self.waiting_time[vehicle] += 1
+
+
     #set stop for the lanes
     def _maintain_stop(self):
-        pass
+        
+        for i in range(len(self.from_edges_id)):
+            veh_and_dists = self._get_veh_and_dist_on_edge(self.from_edges_id[i])
+            vehicles = [couple[0] for couple in veh_and_dists]
+            for vehicle in vehicles:
+                if vehicle not in self.veh_tocross:
+                    stop = self.from_edges_len[i]-2
+                    traci.vehicle.setStop(vehicle, self.from_edges_id[i], stop, duration=10, startPos=stop, until=10)
+
+
 
     #renvoyer la liste des vehicules sur une voie en ordre de plus proche au plus loin
-    def _get_veh_on_selected_lane(self):
-        pass
+    def _get_veh_and_dist_on_edge(self, edge_id : str):
+
+        veh_and_dists = []
+
+        vehicules = traci.vehicle.getIDList()
+        for veh in vehicules:
+            lane = traci.vehicle.getLaneID(veh).split("_")[0]
+            if lane == edge_id:
+                dist = self._distance(traci.vehicle.getPosition(veh))
+                if dist <= self.visibility:
+                    veh_and_dists.append((veh, dist))
+
+        return sorted(veh_and_dists, key= lambda x: x[1])
+        
     
+    def _verify_vehicles_tocross(self):
+
+        leaving_vehicles = []
+        for edge in self.to_edges_id:
+            leaving_vehicles.extend(self._get_veh_and_dist_on_edge(edge))
+        
+        for couple in leaving_vehicles:
+            if couple[0] in self.veh_tocross and couple[1] > 8.0:
+                self.veh_tocross.remove(couple[0])
+
+            
     #les vehicules qui doivent passer
-    def _get_veh_tocross(self):
-        pass
+    def _update_veh_tocross(self):
+
+        number = self.max_vehicles[self.cursor]
+        veh_and_dists = self._get_veh_and_dist_on_edge(self.from_edges_id[self.cursor])
+
+        vehicles_tocross = [couple[0] for couple in veh_and_dists][:number]
+        for veh in vehicles_tocross:
+            del self.waiting_time[veh]
+
+        self.veh_tocross = vehicles_tocross
+
+
+
+    def _distance(self, pos):
+        return math.sqrt(math.pow((pos[0]-self.center[0]),2)+math.pow((pos[1]-self.center[1]),2))
+
 
     #changer de voie
-    def _switch_lane(self):
-        pass
+    def _switch_edge(self):
 
-    def _update_lane_priorities(self):
-        pass
+        other_edges = deepcopy(self.from_edges_id)
+        other_priorities = deepcopy(self.priorities)
+        for i in range(len(other_edges)):
+            if other_edges[i] == self.from_edges_id[self.cursor]:
+                other_edges.pop(i)
+                other_priorities.pop(i)
+        
+        new_selected_id = other_edges[other_priorities.index(max(other_priorities))]
+        self.cursor = self.priorities.index(max(self.priorities))
 
-    #verifier s'il y'a des vehicules qui circulent dans l'intersection
-    def _verify_crossing(self):
-        pass
 
-    def set_max_vehicles(self, value:list[float]):
-        self.max_vehicles = value
+    def _update_priorities(self):
+        
+        new_priorities = []
+        for edge in self.from_edges_id:
+            veh_and_dists = self._get_veh_and_dist_on_edge(edge)
+            priority = 0
+            for couple in veh_and_dists:
+                priority += (self.visibility - couple[1]) * self.waiting_time[couple[0]]
+            new_priorities.append(priority)
 
-    def step():
-        pass
+        self.priorities = new_priorities

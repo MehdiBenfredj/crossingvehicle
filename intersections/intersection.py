@@ -6,11 +6,11 @@ class Intersection():
         self.id = id
         self.center = Point(center[0], center[1])
 
-        visibility = abs(visibility)
-        a = (center[0]-visibility, center[1]-visibility)
-        b = (center[0]+visibility, center[1]-visibility)
-        c = (center[0]+visibility, center[1]+visibility)
-        d = (center[0]-visibility, center[1]+visibility)
+        self.visibility = abs(visibility)
+        a = (center[0]-self.visibility, center[1]-self.visibility)
+        b = (center[0]+self.visibility, center[1]-self.visibility)
+        c = (center[0]+self.visibility, center[1]+self.visibility)
+        d = (center[0]-self.visibility, center[1]+self.visibility)
         self.area = Polygon((a, b, c, d))
 
 
