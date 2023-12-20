@@ -22,7 +22,6 @@ class GeneticConfig():
         self.children_number = 4
         self.crossing_points = 1
         self.crossing_mode = "classic"
-        self.mutation_proba = 0.5
         self.initial_pop_size = 8
 
         # Output CSV file
@@ -53,7 +52,6 @@ class GeneticConfig():
         self.children_number = values["children_number"]
         self.crossing_points = values["crossing_points"]
         self.crossing_mode = values["crossing_mode"]
-        self.mutation_proba = values["mutation_proba"]
         self.initial_pop_size = values["initial_pop_size"]
 
         self.net = sumolib.net.readNet(os.path.join(self.sumo_folder, self.net_file))
@@ -68,11 +66,12 @@ class GeneticConfig():
 
     def set_output_file_and_mkdirs(self, fp : str):
 
-        if os.path.dirname(fp) != "":
-            os.makedirs(os.path.dirname(fp), exist_ok=True)
+        if fp != "":
+            if os.path.dirname(fp) != "":
+                os.makedirs(os.path.dirname(fp), exist_ok=True)
+            with open(fp, "w") as csv_file:
+                pass
         self.output_file = fp
-        with open(self.output_file, "w") as csv_file:
-            writer = csv.writer(csv_file)
             
 
 
@@ -87,6 +86,8 @@ class GeneticConfig():
                 inter["id"],
                 self.net.getNode(inter["id"]).getCoord(),
                 inter["visibility"],
+                inter["mutation_proba"],
+                inter["mutation_max"],
                 inter["id"],
                 inter["phases"],
                 inter["min_phase_time"],
@@ -113,9 +114,13 @@ class GeneticConfig():
                 inter["id"],
                 self.net.getNode(inter["id"]).getCoord(),
                 inter["visibility"],
+                inter["mutation_proba"],
+                inter["mutation_max"],
                 from_edges_id,
                 from_edges_len,
-                to_edges_id
+                to_edges_id,
+                inter["edge_priority_range"],
+                inter["maximum"],
             )
         # Others intersections...
         

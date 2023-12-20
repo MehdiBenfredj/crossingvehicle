@@ -1,3 +1,4 @@
 libsumo
 numpy
 shapely
+tqdm

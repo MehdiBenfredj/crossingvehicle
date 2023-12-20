@@ -2,8 +2,8 @@ from algcfg import GeneticConfig
 from roufilebuilder import RouFile
 from sumoconfbuilder import SumoConfFile
 from population import Population
+from tqdm import tqdm
 import libsumo as traci
-import logging
 import random
 import csv
 import os
@@ -19,6 +19,7 @@ class GeneticAlgorithm():
         
         self.__generate_rou_file()
         self.__generate_conf_file()
+        print("==> Sumofiles generated")
 
 
     def __generate_rou_file(self):
@@ -38,30 +39,31 @@ class GeneticAlgorithm():
 
         # Save file
         rou_file.save(self.conf.sumo_folder)
-        logging.info("Rou file generated")
+        print("- Rou file generated")
 
 
     def __generate_conf_file(self):
 
         sumo_conf = SumoConfFile(self.conf.net_file)
         sumo_conf.save(self.conf.sumo_folder)
-        logging.info("Conf file generated")
+        print("- Conf file generated")
 
     
     def __generate_initial_pops(self):
         
         for i in range(len(self.intersections)):
-            
-            logging.info("Creating initial pop for intersection {}".format(self.intersections[i].id))
+
+            print("Creating initial pop for intersection {}".format(self.intersections[i].id), "(intersection of type", type(self.intersections[i]).__name__, ")")
             pop = Population()
             chromosoms = self.intersections[i].get_initial_chromosoms(self.conf.initial_pop_size)
 
-            for chrom in chromosoms:
-                fitness = self._compute_fitness(i, chrom)
-                pop.insert(chrom, fitness)
+            for j in tqdm(range(len(chromosoms))):
+                fitness = self._compute_fitness(i, chromosoms[j])
+                pop.insert(chromosoms[j], fitness)
             
             self.populations.append(pop)
-            logging.info("Population created")
+
+        print("==> Initial populations defined")
             
     
     def _compute_fitness(self, intersection_index : int, chromosom : list[float]) -> float:
@@ -187,8 +189,8 @@ class GeneticAlgorithm():
                 couple = random.choices(parents, k=2)
                 crossed = self._crossing(couple[0], couple[1])
 
-                children.append(self.intersections[i].mutation(crossed[0], self.conf.mutation_proba))
-                children.append(self.intersections[i].mutation(crossed[1], self.conf.mutation_proba))
+                children.append(self.intersections[i].mutation(crossed[0]))
+                children.append(self.intersections[i].mutation(crossed[1]))
     
             
             if len(children) > self.conf.children_number:
@@ -199,10 +201,14 @@ class GeneticAlgorithm():
                 self.populations[i].insert(child, fitness)
 
             self.populations[i].del_worst_chromosoms(len(children))
+            print(self.populations[i])
 
 
 
     def _save_in_csv(self):
+
+        if self.conf.output_file == "":
+            return
     
         with open(self.conf.output_file, "a", newline="", encoding="utf-8", errors="replace") as csv_file:
             writer = csv.writer(csv_file)
@@ -217,9 +223,10 @@ class GeneticAlgorithm():
         self.__generate_initial_pops()
         self._save_in_csv()
 
-        for i in range(self.conf.iterations):
+        print("==> Starting training")
+        for i in tqdm(range(self.conf.iterations)):
             self._update_pops()
             self._save_in_csv()
         
         for i in range(len(self.intersections)):
-            print("La meilleure solution pour l'intersection", self.intersections[i].id, "est : ", self.populations[i].get_best_chrom())
+            print("La meilleure solution pour l'intersection", self.intersections[i].id, "est : ", self.populations[i].get_best_chrom(), "pour les edges :", self.intersections[i].get_edges())

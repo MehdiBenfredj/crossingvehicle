@@ -4,8 +4,8 @@ import random
 
 class TFIntersection(Intersection):
 
-    def __init__(self, id: str, center: list[float], visibility: float, logic_id : str, phases : list[str], min_phase_time : float, cycle_time : float) -> None:
-        super().__init__(id, center, visibility)
+    def __init__(self, id: str, center: list[float], visibility: float, mutation_proba : float, mutation_max : int, logic_id : str, phases : list[str], min_phase_time : float, cycle_time : float) -> None:
+        super().__init__(id, center, visibility, mutation_proba, mutation_max)
 
         self.logic_id = logic_id
         self.phases = phases
@@ -53,14 +53,14 @@ class TFIntersection(Intersection):
     
     
 
-    def mutation(self, chromosom: list[float], proba : float) -> list[float]:
+    def mutation(self, chromosom: list[float]) -> list[float]:
         
         rand_number = random.random()
-        if rand_number > proba:
+        if rand_number > self.mutation_max:
             return chromosom
         
         rand_index = random.randint(0, len(chromosom)-1)
-        rand_modif = random.randint(1,3)
+        rand_modif = random.randint(1,self.mutation_max)
         rand_number = random.random()
         if rand_number >= 0.5:
             if chromosom[rand_index] - rand_modif >= self.min_phase_time:

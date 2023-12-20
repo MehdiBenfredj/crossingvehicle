@@ -2,7 +2,7 @@ from shapely import Polygon, Point
 
 class Intersection():
 
-    def __init__(self, id : str, center : list[float], visibility : float ) -> None:
+    def __init__(self, id : str, center : list[float], visibility : float, mutation_proba : float, mutation_max : int ) -> None:
         self.id = id
         self.center = Point(center[0], center[1])
 
@@ -12,6 +12,8 @@ class Intersection():
         c = (center[0]+self.visibility, center[1]+self.visibility)
         d = (center[0]-self.visibility, center[1]+self.visibility)
         self.area = Polygon((a, b, c, d))
+        self.mutation_proba = mutation_proba
+        self.mutation_max = mutation_max
 
 
     def contains(self, position : tuple):
@@ -34,4 +36,7 @@ class Intersection():
         pass
 
     def step_callback(*args):
+        pass
+
+    def get_edges(self):
         pass
