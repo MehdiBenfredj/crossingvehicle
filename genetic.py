@@ -53,7 +53,7 @@ class GeneticAlgorithm():
         
         for i in range(len(self.intersections)):
 
-            print("Creating initial pop for intersection {}".format(self.intersections[i].id), "(intersection of type", type(self.intersections[i]).__name__, ")")
+            print("==> Creating initial pop for intersection {}".format(self.intersections[i].id), "(intersection of type", type(self.intersections[i]).__name__, ")")
             pop = Population()
             chromosoms = self.intersections[i].get_initial_chromosoms(self.conf.initial_pop_size)
 

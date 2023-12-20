@@ -35,10 +35,10 @@ class AutoIntersection(Intersection):
         rand_modif = random.randint(1, self.mutation_max)
         rand_number = random.random()
         if rand_number >= 0.5:
-            if chromosom[rand_index] - 1 >= 1:
-                chromosom[rand_index] -= 1
+            if chromosom[rand_index] - rand_modif >= 1:
+                chromosom[rand_index] -= rand_modif
         else:
-            chromosom[rand_index] += 1
+            chromosom[rand_index] += rand_modif
             
         return self.sanitize_chromosom(chromosom)
     
@@ -186,7 +186,7 @@ class AutoIntersection(Intersection):
             veh_and_dists = self._get_veh_and_dist_on_edge(edge)
             priority = 0
             for couple in veh_and_dists:
-                priority += 2 * ((self.visibility - couple[1]) + (self.waiting_time[couple[0]] * 2))
+                priority += 2 * ((self.visibility - couple[1]) + (self.waiting_time[couple[0]] ** 2))
             new_priorities.append(priority)
 
         self.priorities = new_priorities
