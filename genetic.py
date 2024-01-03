@@ -203,7 +203,6 @@ class GeneticAlgorithm():
                 self.populations[i].insert(child, fitness)
 
             self.populations[i].del_worst_chromosoms(len(children))
-            print(self.populations[i])
 
 
 
