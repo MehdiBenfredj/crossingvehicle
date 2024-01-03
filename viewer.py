@@ -31,7 +31,6 @@ rou_file.save(conf.sumo_folder)
 print("- Rou file generated")
 
 
-
 sumo_conf = SumoConfFile(conf.net_file)
 sumo_conf.save(conf.sumo_folder)
 print("- Conf file generated")

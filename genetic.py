@@ -203,7 +203,8 @@ class GeneticAlgorithm():
                 self.populations[i].insert(child, fitness)
 
             self.populations[i].del_worst_chromosoms(len(children))
-
+            if self.conf.debug:
+                print(self.populations[i])
 
 
     def _save_in_csv(self):
@@ -233,6 +234,7 @@ class GeneticAlgorithm():
         end_time = time.time()
         
         for i in range(len(self.intersections)):
-            print("La meilleure solution pour l'intersection", self.intersections[i].id, "est : ", self.populations[i].get_best_chrom(), "pour les edges :", self.intersections[i].get_edges())
+            print("The best solution for the", self.intersections[i].id, "intersection is :", self.populations[i].get_best_chrom(), "for", self.intersections[i].get_meaning())
 
-        print("Le temps d'éxécution total est de :", start_time - end_time)
+        print("Execution time :", time.strftime("%H hours %M minutes %S seconds", time.gmtime(end_time-start_time)))
+        

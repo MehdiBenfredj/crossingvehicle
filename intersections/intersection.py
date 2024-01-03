@@ -38,5 +38,5 @@ class Intersection():
     def step_callback(*args):
         pass
 
-    def get_edges(self):
-        pass
+    def get_meaning(self) -> str:
+        return ""

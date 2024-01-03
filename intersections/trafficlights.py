@@ -69,3 +69,7 @@ class TFIntersection(Intersection):
             chromosom[rand_index] += rand_modif
 
         return self.sanitize_chromosom(chromosom)
+    
+
+    def get_meaning(self) -> str:
+        return "phases : " + str(self.phases)

@@ -11,6 +11,7 @@ class GeneticConfig():
 
         # Sumo's configuration
         self.gui = False
+        self.debug = False
         self.sumo_folder = "sumofiles"
         self.sumo_cfg_file = "conf.sumocfg"
         self.net_file = "unknown.net.xml"
@@ -41,6 +42,7 @@ class GeneticConfig():
 
         # Sumo configuration 
         self.gui = values["gui"]
+        self.debug = values["debug"]
         self.sumo_folder = values["sumo_folder"]
         self.sumo_cfg_file = values["sumo_cfg_file"]
         self.net_file = values["net_file"]

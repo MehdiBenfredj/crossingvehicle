@@ -1,5 +1,6 @@
 {
     "gui": false,
+    "debug": false,
     "sumo_folder": "sumofiles",
     "sumo_cfg_file": "config.sumocfg",
     "net_file": "notf.net.xml",
