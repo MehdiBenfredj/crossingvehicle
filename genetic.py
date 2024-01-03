@@ -1,9 +1,11 @@
 from algcfg import GeneticConfig
+from intersections import TFIntersection, AutoIntersection
 from roufilebuilder import RouFile
 from sumoconfbuilder import SumoConfFile
 from population import Population
 from tqdm import tqdm
 import libsumo as traci
+import time
 import random
 import csv
 import os
@@ -105,7 +107,7 @@ class GeneticAlgorithm():
         traci.close()
 
         try:
-            result = sum(time_per_vehicule.values())/len(time_per_vehicule)
+            result = sum(time_per_vehicule.values())
         except:
             result = 10000
         
@@ -220,6 +222,7 @@ class GeneticAlgorithm():
 
     def run(self):
 
+        start_time = time.time()
         self.__generate_initial_pops()
         self._save_in_csv()
 
@@ -228,5 +231,9 @@ class GeneticAlgorithm():
             self._update_pops()
             self._save_in_csv()
         
+        end_time = time.time()
+        
         for i in range(len(self.intersections)):
             print("La meilleure solution pour l'intersection", self.intersections[i].id, "est : ", self.populations[i].get_best_chrom(), "pour les edges :", self.intersections[i].get_edges())
+
+        print("Le temps d'éxécution total est de :", start_time - end_time)

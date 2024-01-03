@@ -8,6 +8,7 @@ class SumoConfFile():
             "\t<input>",
             "\t\t<net-file value=\"{}\"/>".format(net_file_path),
             "\t\t<route-files value=\"{}\"/>".format(rou_file_path),
+            "\t\t<gui-settings-file value=\"gui_settings_file.xml\"/>",
             "\t</input>",
             "</configuration>"
         ]

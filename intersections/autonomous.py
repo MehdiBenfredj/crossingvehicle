@@ -186,7 +186,7 @@ class AutoIntersection(Intersection):
             veh_and_dists = self._get_veh_and_dist_on_edge(edge)
             priority = 0
             for couple in veh_and_dists:
-                priority += 2 * ((self.visibility - couple[1]) + (self.waiting_time[couple[0]] ** 2))
+                priority += ((self.visibility - couple[1]) + (self.waiting_time[couple[0]] * 2))
             new_priorities.append(priority)
 
         self.priorities = new_priorities
