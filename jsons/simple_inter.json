@@ -5,6 +5,7 @@
     "sumo_cfg_file": "config.sumocfg",
     "net_file": "tf.net.xml",
     "duration": 600,
+    "fitness_mode": "time",
 
     "iterations": 10,
     "parents_number": 5,

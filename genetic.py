@@ -70,7 +70,7 @@ class GeneticAlgorithm():
     
     def _compute_fitness(self, intersection_index : int, chromosom : list[float]) -> float:
         
-        time_per_vehicule = {}
+        data_per_vehicule = {}
 
         # Launch simulation
         conf_file_path = os.path.join(self.conf.sumo_folder, self.conf.sumo_cfg_file)
@@ -98,16 +98,32 @@ class GeneticAlgorithm():
         while traci.simulation.getMinExpectedNumber() > 0:
 
             vehicles_in_inter = self._step(intersection_index)
-            for vehicle in vehicles_in_inter:
-                if vehicle in time_per_vehicule:
-                    time_per_vehicule[vehicle] += 1
-                else:
-                    time_per_vehicule[vehicle] = 1
-        
+            
+            if self.conf.fitness_mode == "co2":
+                for vehicle in vehicles_in_inter:
+                    if vehicle in data_per_vehicule:
+                        data_per_vehicule += traci.vehicle.getCO2Emission(vehicle)
+                    else:
+                        data_per_vehicule[vehicle] = traci.vehicle.getCO2Emission(vehicle)
+            
+            elif self.conf.fitness_mode == "consumption":
+                for vehicle in vehicles_in_inter:
+                    if vehicle in data_per_vehicule:
+                        data_per_vehicule += traci.vehicle.getFuelConsumption(vehicle)
+                    else:
+                        data_per_vehicule[vehicle] = traci.vehicle.getFuelConsumption(vehicle)
+
+            else:
+                for vehicle in vehicles_in_inter:
+                    if vehicle in data_per_vehicule:
+                        data_per_vehicule[vehicle] += 1
+                    else:
+                        data_per_vehicule[vehicle] = 1
+
         traci.close()
 
         try:
-            result = sum(time_per_vehicule.values())
+            result = sum(data_per_vehicule.values())
         except:
             result = 10000
         
