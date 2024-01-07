@@ -38,7 +38,7 @@ print("- Conf file generated")
 
 chromosoms = []
 for inter in conf.intersections:
-    print("==> Enter chromosom for intersection", inter.id, "(type :", type(inter).__name__, ")")
+    print("==> Enter chromosome for intersection", inter.id, "(type :", type(inter).__name__, ")")
     csv_chrom = str(input())
     splited_chrom = csv_chrom.split(",")
     chromosoms.append([int(value) for value in splited_chrom])
