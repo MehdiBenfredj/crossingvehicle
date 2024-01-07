@@ -102,14 +102,14 @@ class GeneticAlgorithm():
             if self.conf.fitness_mode == "co2":
                 for vehicle in vehicles_in_inter:
                     if vehicle in data_per_vehicule:
-                        data_per_vehicule += traci.vehicle.getCO2Emission(vehicle)
+                        data_per_vehicule[vehicle] += traci.vehicle.getCO2Emission(vehicle)
                     else:
                         data_per_vehicule[vehicle] = traci.vehicle.getCO2Emission(vehicle)
             
             elif self.conf.fitness_mode == "consumption":
                 for vehicle in vehicles_in_inter:
                     if vehicle in data_per_vehicule:
-                        data_per_vehicule += traci.vehicle.getFuelConsumption(vehicle)
+                        data_per_vehicule[vehicle] += traci.vehicle.getFuelConsumption(vehicle)
                     else:
                         data_per_vehicule[vehicle] = traci.vehicle.getFuelConsumption(vehicle)
 
