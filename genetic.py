@@ -179,11 +179,11 @@ class GeneticAlgorithm():
         if self.conf.crossing_mode == "random":
             for j in range(len(sub_lists_a)):
                 if random.random() <= 0.5:
-                    chromosom_a.extend(sub_lists_a[i])
-                    chromosom_b.extend(sub_lists_b[i])
+                    chromosom_a.extend(sub_lists_a[j])
+                    chromosom_b.extend(sub_lists_b[j])
                 else:
-                    chromosom_a.extend(sub_lists_b[i])
-                    chromosom_b.extend(sub_lists_a[i])
+                    chromosom_a.extend(sub_lists_b[j])
+                    chromosom_b.extend(sub_lists_a[j])
         else:
             for j in range(len(sub_lists_a)):
                 if j%2 == 0:
