@@ -187,11 +187,11 @@ class GeneticAlgorithm():
         else:
             for j in range(len(sub_lists_a)):
                 if j%2 == 0:
-                    chromosom_a.extend(sub_lists_a[i])
-                    chromosom_b.extend(sub_lists_b[i])
+                    chromosom_a.extend(sub_lists_a[j])
+                    chromosom_b.extend(sub_lists_b[j])
                 else:
-                    chromosom_a.extend(sub_lists_b[i])
-                    chromosom_b.extend(sub_lists_a[i])
+                    chromosom_a.extend(sub_lists_b[j])
+                    chromosom_b.extend(sub_lists_a[j])
         
         return [chromosom_a, chromosom_b]
             
