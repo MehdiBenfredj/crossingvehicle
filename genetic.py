@@ -186,7 +186,7 @@ class GeneticAlgorithm():
                     chromosom_b.extend(sub_lists_a[i])
         else:
             for j in range(len(sub_lists_a)):
-                if i%2 == 0:
+                if j%2 == 0:
                     chromosom_a.extend(sub_lists_a[i])
                     chromosom_b.extend(sub_lists_b[i])
                 else:
