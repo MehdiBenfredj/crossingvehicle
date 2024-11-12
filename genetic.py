@@ -70,7 +70,7 @@ class GeneticAlgorithm():
     
     def _compute_fitness(self, intersection_index : int, chromosom : list[float]) -> float:
         
-        time_per_vehicule = {}
+        data_per_vehicule = {}
 
         # Launch simulation
         conf_file_path = os.path.join(self.conf.sumo_folder, self.conf.sumo_cfg_file)
@@ -98,16 +98,32 @@ class GeneticAlgorithm():
         while traci.simulation.getMinExpectedNumber() > 0:
 
             vehicles_in_inter = self._step(intersection_index)
-            for vehicle in vehicles_in_inter:
-                if vehicle in time_per_vehicule:
-                    time_per_vehicule[vehicle] += 1
-                else:
-                    time_per_vehicule[vehicle] = 1
-        
+            
+            if self.conf.fitness_mode == "co2":
+                for vehicle in vehicles_in_inter:
+                    if vehicle in data_per_vehicule:
+                        data_per_vehicule[vehicle] += traci.vehicle.getCO2Emission(vehicle)
+                    else:
+                        data_per_vehicule[vehicle] = traci.vehicle.getCO2Emission(vehicle)
+            
+            elif self.conf.fitness_mode == "consumption":
+                for vehicle in vehicles_in_inter:
+                    if vehicle in data_per_vehicule:
+                        data_per_vehicule[vehicle] += traci.vehicle.getFuelConsumption(vehicle)
+                    else:
+                        data_per_vehicule[vehicle] = traci.vehicle.getFuelConsumption(vehicle)
+
+            else:
+                for vehicle in vehicles_in_inter:
+                    if vehicle in data_per_vehicule:
+                        data_per_vehicule[vehicle] += 1
+                    else:
+                        data_per_vehicule[vehicle] = 1
+
         traci.close()
 
         try:
-            result = sum(time_per_vehicule.values())
+            result = sum(data_per_vehicule.values())
         except:
             result = 10000
         
@@ -163,19 +179,19 @@ class GeneticAlgorithm():
         if self.conf.crossing_mode == "random":
             for j in range(len(sub_lists_a)):
                 if random.random() <= 0.5:
-                    chromosom_a.extend(sub_lists_a[i])
-                    chromosom_b.extend(sub_lists_b[i])
+                    chromosom_a.extend(sub_lists_a[j])
+                    chromosom_b.extend(sub_lists_b[j])
                 else:
-                    chromosom_a.extend(sub_lists_b[i])
-                    chromosom_b.extend(sub_lists_a[i])
+                    chromosom_a.extend(sub_lists_b[j])
+                    chromosom_b.extend(sub_lists_a[j])
         else:
             for j in range(len(sub_lists_a)):
-                if i%2 == 0:
-                    chromosom_a.extend(sub_lists_a[i])
-                    chromosom_b.extend(sub_lists_b[i])
+                if j%2 == 0:
+                    chromosom_a.extend(sub_lists_a[j])
+                    chromosom_b.extend(sub_lists_b[j])
                 else:
-                    chromosom_a.extend(sub_lists_b[i])
-                    chromosom_b.extend(sub_lists_a[i])
+                    chromosom_a.extend(sub_lists_b[j])
+                    chromosom_b.extend(sub_lists_a[j])
         
         return [chromosom_a, chromosom_b]
             

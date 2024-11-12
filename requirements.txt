@@ -2,3 +2,4 @@ libsumo
 numpy
 shapely
 tqdm
+matplotlib

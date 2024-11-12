@@ -16,6 +16,7 @@ class GeneticConfig():
         self.sumo_cfg_file = "conf.sumocfg"
         self.net_file = "unknown.net.xml"
         self.duration = 600
+        self.fitness_mode = ""
 
         # Genetic algorithm's configuration
         self.iterations = 100
@@ -47,6 +48,7 @@ class GeneticConfig():
         self.sumo_cfg_file = values["sumo_cfg_file"]
         self.net_file = values["net_file"]
         self.duration = values["duration"]
+        self.fitness_mode = values["fitness_mode"]
 
         # Genetic algorithm's configuration
         self.iterations = values["iterations"]
